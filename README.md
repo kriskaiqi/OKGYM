@@ -43,7 +43,6 @@ The OKGYM project aims to simplify fitness tracking and motivate users towards t
 
 ## Demo Video
 [![Watch the demo video](https://img.youtube.com/vi/UqYxnq5Bpk0/0.jpg)](https://www.youtube.com/watch?v=UqYxnq5Bpk0)
-Alternatively, you can provide a direct link:
 [Watch the full demo on YouTube!](https://www.youtube.com/watch?v=UqYxnq5Bpk0)
 
 ## Getting Started
@@ -144,6 +143,8 @@ To update exercise statistics with realistic data:
 ```bash
 cd backend
 npm run update:exercise-stats
+```
+
 This command generates and updates realistic stats (rating, calories, duration, completion, popularity) for all exercises in the database.
 
 ## Machine Learning Model
