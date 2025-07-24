@@ -1,0 +1,68 @@
+@startuml EquipmentManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Equipment Management Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Equipment Browsing ==
+
+User -> FE: Access Equipment Section
+FE -> BE: Request Equipment List
+BE -> DB: Fetch Equipment Data
+DB -> BE: Return Equipment List
+BE -> FE: Send Equipment Data
+FE -> User: Display Equipment
+
+== Equipment Details ==
+
+User -> FE: Select Equipment
+FE -> BE: Request Equipment Details
+BE -> DB: Fetch Equipment Info
+DB -> BE: Return Equipment Data
+BE -> FE: Send Equipment Details
+FE -> User: Display Equipment Info
+
+== Related Exercises ==
+
+FE -> BE: Request Related Exercises
+BE -> DB: Fetch Related Data
+DB -> BE: Return Exercise List
+BE -> FE: Send Related Exercises
+FE -> User: Display Related Exercises
+
+== Equipment Usage ==
+
+User -> FE: View Usage Instructions
+FE -> BE: Request Usage Info
+BE -> DB: Fetch Usage Data
+DB -> BE: Return Usage Details
+BE -> FE: Send Usage Info
+FE -> User: Display Instructions
+
+note right of User
+  Equipment Features:
+  - Equipment Catalog
+  - Detailed Information
+  - Related Exercises
+  - Usage Instructions
+end note
+
+@enduml 

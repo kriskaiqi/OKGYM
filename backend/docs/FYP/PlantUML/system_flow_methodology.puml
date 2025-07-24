@@ -1,0 +1,48 @@
+@startuml
+' Title and overall style
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 12
+skinparam defaultFontColor #2E3B4E
+
+' Rectangle styling
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #78909C
+  BorderThickness 1.5
+  RoundCorner 8
+  Shadowing true
+}
+
+' Arrow styling
+skinparam ArrowColor #546E7A
+skinparam ArrowFontColor #37474F
+skinparam ArrowThickness 2
+skinparam linetype ortho
+
+' Use simpler rectangle format
+rectangle "🧐 Problem Understanding (1)\n- Define user requirements\n- Exercise analysis goals" as PU #FFECB3 
+rectangle "📊 Data Understanding (2)\n- Collect video frames\n- Explore sample data" as DU #C8E6C9
+rectangle "🧹 Data Preparation (3)\n- Clean frames & metadata\n- Extract features" as DP #BBDEFB
+rectangle "🤖 Modelling (4)\n- Train ML models (Python service)\n- Build analyzer components" as MO #D1C4E9
+rectangle "✅ Evaluation (5)\n- Validate accuracy & latency\n- Expert verification" as EV #FFE0B2
+rectangle "🚀 Deployment (6)\n- Deploy backend & ML service\n- Integrate with Frontend" as DE #CFD8DC
+
+' Set minimum width for all participants
+skinparam minClassWidth 190
+
+' Tighter layout spacing
+skinparam componentSpacing 20
+skinparam nodesep 20
+skinparam ranksep 20
+skinparam orthogonalDistance 8
+
+' Layout and flow
+top to bottom direction
+PU -down-> DU
+DU -down-> DP
+DP -down-> MO
+MO -down-> EV
+EV -down-> DE
+
+@enduml 

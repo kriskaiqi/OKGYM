@@ -1,0 +1,185 @@
+import { DataSource } from "typeorm";
+import { Exercise } from "../models/Exercise";
+import { ExerciseType, MeasurementType, Difficulty } from "../models/shared/Enums";
+import { WorkoutPlan } from "../models/WorkoutPlan";
+import { WorkoutExercise } from "../models/WorkoutExercise";
+import { WorkoutSession } from "../models/WorkoutSession";
+import { AppDataSource } from "../data-source";
+
+async function resetDatabase() {
+    try {
+        // Initialize the database connection
+        await AppDataSource.initialize();
+        console.log("Database connection established");
+
+        // Drop all existing data
+        await AppDataSource.dropDatabase();
+        console.log("Dropped existing database");
+
+        // Sync database schema
+        await AppDataSource.synchronize();
+        console.log("Database schema synchronized");
+
+        // Create initial exercises
+        const exerciseRepo = AppDataSource.getRepository(Exercise);
+        const exercises = await exerciseRepo
+            .createQueryBuilder()
+            .insert()
+            .into(Exercise)
+            .values([
+                {
+                    name: "Push-ups",
+                    description: "A classic bodyweight exercise that targets the chest, shoulders, and triceps.",
+                    measurementType: MeasurementType.REPS,
+                    types: [ExerciseType.STRENGTH_COMPOUND],
+                    defaultDuration: 60,
+                    detectionCapabilities: {
+                        canCountReps: false,
+                        canDetectPose: false
+                    },
+                    keyPoints: ["Keep body straight", "Lower chest to ground", "Push back up"],
+                    level: Difficulty.BEGINNER,
+                    muscleGroups: ["Chest", "Shoulders", "Triceps"],
+                    equipmentOptions: [],
+                    trackingFeatures: []
+                },
+                {
+                    name: "Plank",
+                    description: "An isometric core exercise that improves stability and strength.",
+                    measurementType: MeasurementType.DURATION,
+                    types: [ExerciseType.CORE],
+                    defaultDuration: 60,
+                    detectionCapabilities: {
+                        canCountReps: false,
+                        canDetectPose: false
+                    },
+                    keyPoints: ["Keep body straight", "Engage core", "Hold position"],
+                    level: Difficulty.BEGINNER,
+                    muscleGroups: ["Core", "Shoulders"],
+                    equipmentOptions: [],
+                    trackingFeatures: []
+                },
+                {
+                    name: "Squats",
+                    description: "A compound lower body exercise that targets the quadriceps, hamstrings, and glutes.",
+                    measurementType: MeasurementType.REPS,
+                    types: [ExerciseType.STRENGTH_COMPOUND],
+                    defaultDuration: 60,
+                    detectionCapabilities: {
+                        canCountReps: false,
+                        canDetectPose: false
+                    },
+                    keyPoints: ["Keep chest up", "Lower until thighs are parallel to ground", "Push through heels"],
+                    level: Difficulty.BEGINNER,
+                    muscleGroups: ["Quadriceps", "Hamstrings", "Glutes"],
+                    equipmentOptions: [],
+                    trackingFeatures: []
+                }
+            ])
+            .execute();
+
+        console.log("Created initial exercises");
+
+        // Create a workout plan
+        const workoutPlan = await AppDataSource.getRepository(WorkoutPlan).save({
+            name: "Beginner Bodyweight Workout",
+            description: "A simple workout for beginners using only bodyweight exercises.",
+            difficulty: Difficulty.BEGINNER,
+            estimatedDuration: 30,
+            targetMuscleGroups: ["Full Body"],
+            equipment: [],
+            isPublic: true,
+            isCustom: false
+        });
+
+        console.log("Created workout plan");
+
+        // Add exercises to the workout plan
+        const workoutExercises = await AppDataSource.getRepository(WorkoutExercise).save([
+            {
+                exercise: { id: exercises.identifiers[0].id } as Exercise,
+                workoutPlan: { id: workoutPlan.id } as WorkoutPlan,
+                order: 1,
+                sets: 3,
+                reps: 10,
+                restSeconds: 60,
+                notes: "Focus on form rather than speed."
+            },
+            {
+                exercise: { id: exercises.identifiers[1].id } as Exercise,
+                workoutPlan: { id: workoutPlan.id } as WorkoutPlan,
+                order: 2,
+                sets: 3,
+                durationSeconds: 30,
+                restSeconds: 30,
+                notes: "Keep your body in a straight line."
+            },
+            {
+                exercise: { id: exercises.identifiers[2].id } as Exercise,
+                workoutPlan: { id: workoutPlan.id } as WorkoutPlan,
+                order: 3,
+                sets: 3,
+                reps: 15,
+                restSeconds: 60,
+                notes: "Make sure your knees don't go past your toes."
+            }
+        ]);
+
+        console.log("Added exercises to workout plan");
+
+        // Create a sample workout session
+        const session = await AppDataSource.getRepository(WorkoutSession).save({
+            user: { id: "1" }, // Assuming user with ID 1 exists
+            workoutPlan: { id: workoutPlan.id },
+            startTime: new Date(),
+            endTime: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes later
+            totalDuration: 30 * 60, // 30 minutes in seconds
+            caloriesBurned: 150,
+            difficultyRating: 3,
+            summary: {
+                totalExercises: 3,
+                uniqueExercises: 3,
+                totalSets: 9,
+                totalReps: 0, // This would be calculated based on actual performance
+                formScore: 0,
+                focusAreas: ["Full Body"],
+                muscleGroups: ["Chest", "Core", "Legs"],
+                exerciseSummaries: [
+                    {
+                        name: workoutExercises[0].exercise.name,
+                        sets: 3,
+                        reps: 10,
+                        weight: 0,
+                        formScore: 4
+                    },
+                    {
+                        name: workoutExercises[1].exercise.name,
+                        sets: 3,
+                        duration: 30,
+                        formScore: 3
+                    },
+                    {
+                        name: workoutExercises[2].exercise.name,
+                        sets: 3,
+                        reps: 15,
+                        weight: 0,
+                        formScore: 4
+                    }
+                ]
+            }
+        });
+
+        console.log("Created sample workout session");
+
+        console.log("Database reset and populated with initial data");
+    } catch (error) {
+        console.error("Error resetting database:", error);
+    } finally {
+        // Close the database connection
+        await AppDataSource.destroy();
+        console.log("Database connection closed");
+    }
+}
+
+// Run the reset function
+resetDatabase().catch(error => console.error(error)); 

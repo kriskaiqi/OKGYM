@@ -1,0 +1,103 @@
+@startuml DetectionSetup
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Detection Setup Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Detection Feature;
+
+|System|
+:Display Detection Setup Interface;
+
+|User|
+:Select Exercise from Dropdown;
+
+|System|
+:Load Exercise Model and Parameters;
+
+|User|
+:Choose Detection Method;
+
+|System|
+if (Live Camera Selected?) then (yes)
+  :Request Camera Permissions;
+  
+  if (Permissions Granted?) then (yes)
+    :Activate Camera Feed;
+    :Display Positioning Guide;
+    
+    |User|
+    :Position in Camera View;
+    
+    |System|
+    :Analyze User Position;
+    
+    if (Position Correct?) then (yes)
+      :Confirm Ready for Detection;
+      :Initialize Detection System;
+      :Navigate to Live Detection;
+    else (no)
+      :Provide Positioning Feedback;
+      repeat
+        |User|
+        :Adjust Position;
+        
+        |System|
+        :Reanalyze Position;
+      repeat while (Position Correct?) is (no)
+    endif
+  else (no)
+    :Display Permission Required Message;
+    :Suggest Alternative Methods;
+    stop
+  endif
+else (Upload Video Selected)
+  :Activate Video Upload Interface;
+  
+  |User|
+  :Select or Record Video;
+  
+  |System|
+  :Validate Video Format;
+  
+  if (Video Valid?) then (yes)
+    :Process Video for Analysis;
+    :Navigate to Video Processing;
+  else (no)
+    :Display Format Error Message;
+    :Suggest Correct Format;
+    stop
+  endif
+endif
+
+note right
+  Setup Requirements:
+  - Exercise Selection
+  - Detection Method
+  - Camera Permissions
+  - Proper Positioning
+  - Video Format Validation
+end note
+
+@enduml 

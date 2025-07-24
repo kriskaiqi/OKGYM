@@ -1,0 +1,98 @@
+@startuml GoalManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Goal Management Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Goal Creation ==
+
+User -> FE: Access Goal Creation
+FE -> BE: Request Goal Templates
+BE -> DB: Fetch Templates
+DB -> BE: Return Templates
+BE -> FE: Send Templates
+FE -> User: Display Goal Options
+
+User -> FE: Select Goal Type
+FE -> BE: Request Parameters
+BE -> FE: Send Parameter Options
+FE -> User: Display Parameter Form
+
+User -> FE: Enter Goal Details
+FE -> BE: Submit Goal Data
+BE -> BE: Validate Goal
+alt Valid Goal
+    BE -> DB: Store New Goal
+    DB -> BE: Goal Stored
+    BE -> FE: Send Success
+    FE -> User: Display Confirmation
+else Invalid Goal
+    BE -> FE: Send Error
+    FE -> User: Display Error Message
+end
+
+== Goal Tracking ==
+
+BE -> BE: Monitor Progress
+BE -> DB: Update Goal Progress
+DB -> BE: Progress Updated
+BE -> FE: Send Progress Update
+FE -> User: Display Progress
+
+== Goal Achievement ==
+
+alt Goal Achieved
+    BE -> BE: Check Completion
+    BE -> DB: Mark Goal Complete
+    DB -> BE: Update Status
+    BE -> FE: Send Achievement
+    FE -> User: Display Congratulations
+else Goal Not Achieved
+    BE -> BE: Calculate Remaining
+    BE -> FE: Send Progress
+    FE -> User: Display Remaining
+end
+
+== Goal Modification ==
+
+User -> FE: Request Edit
+FE -> BE: Fetch Goal Data
+BE -> DB: Get Goal Details
+DB -> BE: Return Goal Info
+BE -> FE: Send Goal Data
+FE -> User: Display Edit Form
+
+User -> FE: Submit Changes
+FE -> BE: Update Goal
+BE -> DB: Store Changes
+DB -> BE: Changes Saved
+BE -> FE: Send Update
+FE -> User: Display Updated Goal
+
+note right of User
+  Goal Features:
+  - Goal Creation
+  - Progress Tracking
+  - Achievement Recognition
+  - Goal Modification
+end note
+
+@enduml 

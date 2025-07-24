@@ -1,0 +1,231 @@
+@startuml Overview_ERD
+
+' Page settings for vertical layout
+skinparam pageMargin 10
+skinparam pageExternalColor white
+skinparam pageBorderColor white
+skinparam page {
+    width 900
+    height 1800
+}
+
+' Styling
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Core>> #B4D6FF
+    BackgroundColor<<Junction>> #B4FFB4
+    BackgroundColor<<Lookup>> #FFFFB4
+    BackgroundColor<<Tracking>> #FFD6B4
+    BorderColor #666666
+    ArrowColor #666666
+    FontSize 10
+    AttributeFontSize 9
+}
+
+' Top Section - Core Entities
+package "Core Entities" {
+    together {
+        class users << Core >> {
+            ○ PK id
+            --
+            email
+            userRole
+        }
+
+        class exercises << Core >> {
+            ○ PK id
+            --
+            name
+            type
+        }
+
+        class workout_plans << Core >> {
+            ○ PK id
+            --
+            name
+            difficulty
+        }
+    }
+
+    together {
+        class equipment << Core >> {
+            ○ PK id
+            --
+            name
+            category
+        }
+
+        class media << Core >> {
+            ○ PK id
+            --
+            type
+            url
+        }
+
+        class audio_cues << Core >> {
+            ○ PK id
+            --
+            FK exercise_id
+            name
+        }
+    }
+}
+
+' Side Sections
+package "Lookup Tables" {
+    class workout_tags << Lookup >> {
+        ○ PK id
+        --
+        name
+    }
+
+    class equipment_categories << Lookup >> {
+        ○ PK id
+        --
+        name
+    }
+}
+
+package "Tracking Tables" {
+    together {
+        class body_metrics << Tracking >> {
+            ○ PK id
+            --
+            FK user_id
+        }
+
+        class fitness_goals << Tracking >> {
+            ○ PK id
+            --
+            FK user_id
+        }
+    }
+
+    together {
+        class workout_sessions << Tracking >> {
+            ○ PK id
+            --
+            FK user_id
+            FK workout_plan_id
+        }
+
+        class achievement << Tracking >> {
+            ○ PK id
+            --
+            FK workout_session_id
+        }
+    }
+}
+
+' Junction Tables in Two Rows
+package "Junction Tables" {
+    ' First Row of Junction Tables
+    together {
+        class exercise_equipment << Junction >> {
+            ○ PK id
+            --
+            FK exercise_id
+            FK equipment_id
+        }
+
+        class exercise_media << Junction >> {
+            ○ PK id
+            --
+            FK exercise_id
+            FK media_id
+        }
+
+        class equipment_category << Junction >> {
+            ○ PK id
+            --
+            FK exercise_id
+            FK category_id
+        }
+
+        class workout_exercises << Junction >> {
+            ○ PK id
+            --
+            FK workout_plan_id
+            FK exercise_id
+        }
+
+        class workout_equipment << Junction >> {
+            ○ PK id
+            --
+            FK workout_id
+            FK equipment_id
+        }
+    }
+
+    ' Second Row of Junction Tables
+    together {
+        class workout_muscle_group << Junction >> {
+            ○ PK id
+            --
+            FK workout_id
+            FK category_id
+        }
+
+        class workout_tag_map << Junction >> {
+            ○ PK id
+            --
+            FK workout_id
+            FK tag_id
+        }
+
+        class user_favourite_workouts << Junction >> {
+            ○ PK id
+            --
+            FK user_id
+            FK workout_id
+        }
+
+        class equipment_muscle_group << Junction >> {
+            ○ PK id
+            --
+            FK equipment_id
+            FK category_id
+        }
+    }
+}
+
+' Layout hints
+workout_tags -[hidden]d- workout_tag_map
+equipment_categories -[hidden]d- equipment_category
+
+' Core to Junction relationships
+users -d-> workout_sessions
+users -d-> body_metrics
+users -d-> fitness_goals
+users -d-> user_favourite_workouts
+
+exercises -d-> exercise_equipment
+exercises -d-> exercise_media
+exercises -d-> audio_cues
+exercises -d-> workout_exercises
+
+workout_plans -d-> workout_exercises
+workout_plans -d-> workout_equipment
+workout_plans -d-> workout_muscle_group
+workout_plans -d-> workout_tag_map
+workout_plans -d-> workout_sessions
+workout_plans -d-> user_favourite_workouts
+
+equipment -d-> equipment_muscle_group
+equipment -d-> exercise_equipment
+equipment -d-> workout_equipment
+equipment -d-> equipment_category
+
+media -d-> exercise_media
+
+' Lookup to Junction relationships
+workout_tags -d-> workout_tag_map
+equipment_categories -d-> equipment_category
+equipment_categories -d-> equipment_muscle_group
+
+' Tracking relationships
+workout_sessions -d-> achievement
+
+@enduml 

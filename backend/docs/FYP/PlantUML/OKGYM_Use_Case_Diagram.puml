@@ -1,0 +1,127 @@
+@startuml OKGYM_Use_Case_Diagram
+
+' Basic styling - minimal
+skinparam actorStyle hollow
+skinparam linetype polyline
+left to right direction
+
+' Use colored packages to organize use cases
+skinparam packageStyle rectangle
+skinparam packageBackgroundColor transparent
+skinparam packageBorderColor #AAAAAA
+skinparam shadowing false
+skinparam nodesep 50
+skinparam ranksep 50
+
+' Title
+title OKGYM Web Application - Use Case Diagram
+
+' Actor definitions with inheritance
+:Regular User: as RegularUser
+:Admin: as Admin
+Admin --|> RegularUser
+
+rectangle "OKGYM Fitness Platform" {
+  package "User Management" as UserMgmt #E8F5E9 {
+    (Register Account) as UC1
+    (Login / Logout) as UC2
+    (Edit Profile) as UC3
+    (Toggle Dark Mode) as UC33
+  }
+  
+  package "Workout Management" as WorkoutMgmt #E3F2FD {
+    (Browse Workouts) as UC5
+    (View Workout Details) as UC6
+    (Save Favorite Workouts) as UC9
+    (Filter Exercises) as UC16
+  }
+  
+  package "Workout Sessions" as WorkoutSessions #FFF9C4 {
+    (Start Workout Session) as UC10
+    (Record Exercise Performance) as UC11
+    (Complete Workout Session) as UC12
+    (View Workout History) as UC13
+    (View Workout Summary) as UC34
+    (Provide Workout Feedback) as UC31
+  }
+  
+  package "Exercise and Equipment Management" as ExerciseMgmt #F3E5F5 {
+    (Browse Exercises) as UC14
+    (View Exercise Details) as UC15
+    (Filter Exercises) as UC45
+    (Browse Equipment) as UC28
+    (View Equipment Details) as UC29
+    (Filter Equipment) as UC37
+  }
+  
+  package "Real-time Detection" as RealTimeDetection #E8EAF6 {
+    (Start Exercise Detection Session) as UC30
+    (Choose Exercise) as UC46
+    (Monitor Exercise Form and Performance) as UC38
+    (Choose Detection Method) as UC40
+    (Upload Exercise Video) as UC17
+    (Use Live Camera) as UC47
+    (Change Metrics Layout) as UC41
+  }
+  
+  package "Progress Tracking" as ProgressTracking #FFEBEE {
+    (View Progress Dashboard) as UC19
+    (Track Weight Changes) as UC20
+    (Set Fitness Goals) as UC21
+    (Generate Progress Reports) as UC23
+    (Filter Progress by Time) as UC36
+  }
+  
+  package "Achievements" as Achievements #EFEBE9 {
+    (View Achievements) as UC35
+    (Filter Achievements by Tier) as UC42
+    (Filter Achievements by Type) as UC43
+    (View Completion Rate) as UC44
+  }
+  
+  package "Admin Functions" as AdminFunctions #FFF3E0 {
+    (Perform AI Testing) as UC32
+  }
+
+  ' Key relationships (simplified)
+  UC5 ..> UC16
+  UC5 ..> UC6
+  UC5 --> UC10
+  UC10 ..> UC11
+  UC10 ..> UC12
+  UC10 --> UC30
+  UC12 --> UC34
+  UC34 --> UC31
+  UC14 ..> UC15
+  UC14 ..> UC45
+  UC28 ..> UC37
+  UC28 ..> UC29
+  UC29 ..> UC15
+  UC30 ..> UC46
+  UC30 ..> UC40
+  UC40 ..> UC17
+  UC40 ..> UC47
+  UC17 ..> UC38
+  UC47 ..> UC38
+  UC38 --> UC34
+  UC30 ..> UC41
+  UC19 ..> UC23
+  UC19 ..> UC36
+  UC21 ..> UC19
+  UC35 ..> UC42
+  UC35 ..> UC43
+  UC35 --> UC44
+}
+
+' Connections to actors (simplified - just connecting to packages)
+RegularUser -- UserMgmt
+RegularUser -- WorkoutMgmt
+RegularUser -- WorkoutSessions
+RegularUser -- ExerciseMgmt
+RegularUser -- RealTimeDetection
+RegularUser -- ProgressTracking
+RegularUser -- Achievements
+
+Admin -- AdminFunctions
+
+@enduml 

@@ -1,0 +1,124 @@
+import { Router } from 'express';
+import { ExerciseController } from '../controllers/ExerciseController';
+import { CacheStrategy } from '../middleware/httpCache';
+import { authMiddleware, adminOnly } from '../middleware/auth';
+
+const router = Router();
+const exerciseController = new ExerciseController();
+
+/**
+ * @route GET /exercises
+ * @desc Get all exercises with optional filtering
+ * @access Public
+ * @cache Medium-lived (1 hour) with ETag
+ */
+router.get('/', 
+  CacheStrategy.MediumLived(),
+  exerciseController.getExercises
+);
+
+/**
+ * @route GET /exercises/:id
+ * @desc Get exercise by ID
+ * @access Public
+ * @cache Long-lived (1 day) with ETag for static exercise data
+ */
+router.get('/:id',
+  CacheStrategy.LongLived(),
+  exerciseController.getExerciseById
+);
+
+/**
+ * @route GET /exercises/popular
+ * @desc Get popular exercises
+ * @access Public
+ * @cache Medium-lived (1 hour) as this is a dynamic but slow-changing list
+ */
+router.get('/popular',
+  CacheStrategy.MediumLived(),
+  exerciseController.getPopularExercises
+);
+
+/**
+ * @route GET /exercises/search
+ * @desc Search exercises by term
+ * @access Public
+ * @cache Short-lived (5 minutes) as search results may change
+ */
+router.get('/search',
+  CacheStrategy.ShortLived(),
+  exerciseController.searchExercises
+);
+
+/**
+ * @route GET /exercises/category/:categoryId
+ * @desc Get exercises by category
+ * @access Public
+ * @cache Medium-lived (1 hour)
+ */
+router.get('/category/:categoryId',
+  CacheStrategy.MediumLived(),
+  exerciseController.getExercisesByCategory
+);
+
+/**
+ * @route GET /exercises/equipment/:equipmentId
+ * @desc Get exercises by equipment
+ * @access Public
+ * @cache Medium-lived (1 hour)
+ */
+router.get('/equipment/:equipmentId',
+  CacheStrategy.MediumLived(),
+  exerciseController.getExercisesByEquipment
+);
+
+/**
+ * @route GET /exercises/:id/related
+ * @desc Get related exercises for an exercise
+ * @access Public
+ * @cache Long-lived (1 day) as related exercises rarely change
+ */
+router.get('/:id/related',
+  CacheStrategy.LongLived(),
+  exerciseController.getRelatedExercises
+);
+
+// Routes that modify data - no caching
+
+/**
+ * @route POST /exercises
+ * @desc Create new exercise
+ * @access Admin
+ * @cache No caching for mutations
+ */
+router.post('/',
+  authMiddleware(['admin']),
+  CacheStrategy.NoCache(),
+  exerciseController.createExercise
+);
+
+/**
+ * @route PUT /exercises/:id
+ * @desc Update exercise
+ * @access Admin
+ * @cache No caching for mutations
+ */
+router.put('/:id',
+  authMiddleware(['admin']),
+  CacheStrategy.NoCache(),
+  exerciseController.updateExercise
+);
+
+/**
+ * @route DELETE /exercises/:id
+ * @desc Delete exercise
+ * @access Admin
+ * @cache No caching for mutations
+ */
+router.delete('/:id',
+  authMiddleware(['admin']),
+  CacheStrategy.NoCache(),
+  exerciseController.deleteExercise
+);
+
+export default router; 

@@ -1,0 +1,126 @@
+import { Exercise } from '../models/Exercise';
+import { AppDataSource } from '../data-source';
+import { 
+  ExerciseType, 
+  MeasurementType, 
+  Difficulty, 
+  MovementPattern, 
+  MuscleGroup 
+} from '../models/shared/Enums';
+
+/**
+ * Seed the database with sample exercises
+ */
+export async function seedExercises(): Promise<void> {
+  try {
+    const exerciseRepository = AppDataSource.getRepository(Exercise);
+    
+    // Check if we already have exercises
+    const existingCount = await exerciseRepository.count();
+    if (existingCount > 0) {
+      console.log(`Database already has ${existingCount} exercises. Skipping seed.`);
+      return;
+    }
+    
+    // Create sample exercises
+    const pushUpExercise = new Exercise();
+    pushUpExercise.name = 'Push-up';
+    pushUpExercise.description = 'A classic bodyweight exercise that works your chest, shoulders, and triceps.';
+    pushUpExercise.measurementType = MeasurementType.REPS;
+    pushUpExercise.types = [ExerciseType.STRENGTH_COMPOUND];
+    pushUpExercise.level = Difficulty.BEGINNER;
+    pushUpExercise.movementPattern = MovementPattern.PUSH;
+    pushUpExercise.targetMuscleGroups = [
+      MuscleGroup.CHEST, 
+      MuscleGroup.SHOULDERS, 
+      MuscleGroup.TRICEPS
+    ];
+    pushUpExercise.synergistMuscleGroups = [
+      MuscleGroup.CORE
+    ];
+    pushUpExercise.trackingFeatures = [];
+    
+    const squatExercise = new Exercise();
+    squatExercise.name = 'Bodyweight Squat';
+    squatExercise.description = 'A fundamental lower body exercise that targets the quadriceps, hamstrings, and glutes.';
+    squatExercise.measurementType = MeasurementType.REPS;
+    squatExercise.types = [ExerciseType.STRENGTH_COMPOUND];
+    squatExercise.level = Difficulty.BEGINNER;
+    squatExercise.movementPattern = MovementPattern.SQUAT;
+    squatExercise.targetMuscleGroups = [
+      MuscleGroup.QUADRICEPS, 
+      MuscleGroup.HAMSTRINGS, 
+      MuscleGroup.GLUTES
+    ];
+    squatExercise.synergistMuscleGroups = [
+      MuscleGroup.CORE, 
+      MuscleGroup.LOWER_BACK
+    ];
+    squatExercise.trackingFeatures = [];
+    
+    const plankExercise = new Exercise();
+    plankExercise.name = 'Plank';
+    plankExercise.description = 'An isometric core exercise that improves core strength and stability.';
+    plankExercise.measurementType = MeasurementType.DURATION;
+    plankExercise.types = [ExerciseType.STRENGTH_ISOLATION];
+    plankExercise.level = Difficulty.BEGINNER;
+    plankExercise.movementPattern = MovementPattern.STATIC;
+    plankExercise.targetMuscleGroups = [
+      MuscleGroup.CORE
+    ];
+    plankExercise.synergistMuscleGroups = [
+      MuscleGroup.SHOULDERS,
+      MuscleGroup.GLUTES
+    ];
+    plankExercise.trackingFeatures = [];
+    
+    const lungeExercise = new Exercise();
+    lungeExercise.name = 'Forward Lunge';
+    lungeExercise.description = 'A unilateral lower body exercise that targets the quads, hamstrings, and glutes while improving balance.';
+    lungeExercise.measurementType = MeasurementType.REPS;
+    lungeExercise.types = [ExerciseType.STRENGTH_COMPOUND];
+    lungeExercise.level = Difficulty.BEGINNER;
+    lungeExercise.movementPattern = MovementPattern.LUNGE;
+    lungeExercise.targetMuscleGroups = [
+      MuscleGroup.QUADRICEPS,
+      MuscleGroup.HAMSTRINGS,
+      MuscleGroup.GLUTES
+    ];
+    lungeExercise.synergistMuscleGroups = [
+      MuscleGroup.CORE,
+      MuscleGroup.CALVES
+    ];
+    lungeExercise.trackingFeatures = [];
+    
+    const jumpingJackExercise = new Exercise();
+    jumpingJackExercise.name = 'Jumping Jacks';
+    jumpingJackExercise.description = 'A cardiovascular exercise that works the whole body and increases heart rate.';
+    jumpingJackExercise.measurementType = MeasurementType.REPS;
+    jumpingJackExercise.types = [ExerciseType.CARDIO];
+    jumpingJackExercise.level = Difficulty.BEGINNER;
+    jumpingJackExercise.movementPattern = MovementPattern.DYNAMIC;
+    jumpingJackExercise.targetMuscleGroups = [
+      MuscleGroup.FULL_BODY
+    ];
+    jumpingJackExercise.synergistMuscleGroups = [];
+    jumpingJackExercise.trackingFeatures = [];
+    
+    // Save exercises to the database
+    const exercises = [
+      pushUpExercise,
+      squatExercise,
+      plankExercise,
+      lungeExercise,
+      jumpingJackExercise
+    ];
+    
+    for (const exercise of exercises) {
+      await exerciseRepository.save(exercise);
+    }
+    
+    console.log(`Successfully seeded ${exercises.length} exercises`);
+  } catch (error) {
+    console.error('Error seeding exercises:', error);
+    throw error;
+  }
+} 

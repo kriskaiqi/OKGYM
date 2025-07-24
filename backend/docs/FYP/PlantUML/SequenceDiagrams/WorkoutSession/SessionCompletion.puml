@@ -1,0 +1,67 @@
+@startuml SessionCompletion
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Session Completion Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "Achievement System" as AS
+
+== Finalize Session ==
+
+User -> FE: Complete Workout
+FE -> BE: End Session
+BE -> DB: Update Session Status
+DB -> BE: Status Updated
+
+== Progress Saving ==
+
+FE -> BE: Send Final Progress
+BE -> DB: Save Session Data
+DB -> BE: Data Saved
+BE -> FE: Save Confirmation
+
+== Summary Generation ==
+
+BE -> DB: Fetch Session Data
+DB -> BE: Return Session Info
+BE -> BE: Generate Summary
+BE -> FE: Send Summary
+FE -> User: Display Summary
+
+== Achievement Updates ==
+
+BE -> AS: Check Achievements
+AS -> DB: Verify Requirements
+DB -> AS: Return Status
+AS -> BE: Achievement Updates
+BE -> DB: Save Achievements
+DB -> BE: Achievements Saved
+BE -> FE: Send Achievement Updates
+FE -> User: Display New Achievements
+
+note right of User
+  Completion Features:
+  - Session Finalization
+  - Progress Saving
+  - Summary Generation
+  - Achievement Updates
+end note
+
+@enduml 

@@ -1,0 +1,65 @@
+@startuml ExerciseDetails
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Exercise Details Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "Media Server" as MS
+
+== Exercise Information ==
+
+User -> FE: Select Exercise
+FE -> BE: Request Exercise Details
+BE -> DB: Fetch Exercise Data
+DB -> BE: Return Exercise Info
+BE -> FE: Send Exercise Details
+FE -> User: Display Exercise Info
+
+== Video Content ==
+
+FE -> MS: Request Exercise Video
+MS -> FE: Stream Video Content
+FE -> User: Display Video Player
+
+== Form Guidelines ==
+
+FE -> BE: Request Form Guidelines
+BE -> DB: Fetch Guidelines
+DB -> BE: Return Guidelines
+BE -> FE: Send Guidelines
+FE -> User: Display Form Instructions
+
+== Related Exercises ==
+
+FE -> BE: Request Related Exercises
+BE -> DB: Fetch Related Data
+DB -> BE: Return Related List
+BE -> FE: Send Related Exercises
+FE -> User: Display Related Exercises
+
+note right of User
+  Details Features:
+  - Exercise Information
+  - Video Demonstration
+  - Form Guidelines
+  - Related Exercises
+end note
+
+@enduml 

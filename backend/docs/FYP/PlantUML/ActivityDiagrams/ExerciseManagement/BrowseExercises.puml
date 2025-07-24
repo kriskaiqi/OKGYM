@@ -1,0 +1,87 @@
+@startuml BrowseExercises
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Browse Exercises Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Exercises Section;
+
+|System|
+:Retrieve Exercise Library;
+
+if (Exercises Available?) then (yes)
+  :Display Exercise Categories:
+  - Muscle Groups
+  - Equipment Required
+  - Difficulty Level;
+  
+  |User|
+  :Browse Exercise Categories;
+  
+  fork
+    |User|
+    :Scroll Through Exercises;
+    
+    |System|
+    :Load More Exercises on Scroll;
+  fork again
+    |User|
+    :Hover Over Exercise Items;
+    
+    |System|
+    :Display Video Preview;
+    
+    if (Preview Loaded?) then (yes)
+      :Play Preview;
+    else (no)
+      :Display Placeholder Image;
+      :Show Retry Option;
+    endif
+  end fork
+  
+  |User|
+  :View Exercise Details;
+  
+  |System|
+  :Display Exercise Information;
+  
+  stop
+else (no)
+  :Display "No Exercises Available" Message;
+  :Suggest Contacting Support;
+  
+  stop
+endif
+
+note right
+  Exercise Information:
+  - Name and Description
+  - Target Muscle Groups
+  - Difficulty Level
+  - Equipment Required
+  - Form Instructions
+  - Video Demonstration
+end note
+
+@enduml 

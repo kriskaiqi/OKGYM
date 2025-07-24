@@ -1,0 +1,145 @@
+@startuml SystemManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title System Management Sequence
+
+actor Admin
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "AI Model" as AI
+
+== System Configuration ==
+
+Admin -> FE: Access System Settings
+FE -> BE: Request Configuration
+BE -> DB: Fetch Settings
+DB -> BE: Return Settings
+BE -> FE: Send Configuration
+FE -> Admin: Display Settings
+
+Admin -> FE: Update Settings
+FE -> BE: Submit Changes
+BE -> DB: Store Settings
+DB -> BE: Settings Updated
+BE -> FE: Send Confirmation
+FE -> Admin: Display Success Message
+
+== AI Model Management ==
+
+Admin -> FE: Access AI Settings
+FE -> BE: Request Model Status
+BE -> AI: Check Model Status
+AI -> BE: Return Status
+BE -> FE: Send Model Info
+FE -> Admin: Display Model Status
+
+alt Model Actions
+    Admin -> FE: Select Model Action
+    FE -> BE: Process Action
+    alt Update Model
+        BE -> AI: Update Model
+        AI -> BE: Model Updated
+        BE -> FE: Send Confirmation
+        FE -> Admin: Display Success Message
+    else Test Model
+        BE -> AI: Run Test
+        AI -> BE: Return Results
+        BE -> FE: Send Test Data
+        FE -> Admin: Display Results
+    end
+end
+
+== System Monitoring ==
+
+BE -> BE: Monitor System Health
+BE -> DB: Check System Metrics
+DB -> BE: Return Metrics
+BE -> FE: Send Health Data
+FE -> Admin: Display System Status
+
+alt System Alerts
+    BE -> BE: Check System Status
+    alt System Issue Detected
+        BE -> FE: Send Alert
+        FE -> Admin: Display Alert
+    else System Normal
+        BE -> FE: Send Status Update
+        FE -> Admin: Display Normal Status
+    end
+end
+
+== Log Management ==
+
+Admin -> FE: Access Logs
+FE -> BE: Request Log Data
+BE -> DB: Fetch Logs
+DB -> BE: Return Logs
+BE -> FE: Send Log Information
+FE -> Admin: Display Log Viewer
+
+alt Log Actions
+    Admin -> FE: Select Log Action
+    FE -> BE: Process Log Request
+    alt Export Logs
+        BE -> DB: Generate Log Export
+        DB -> BE: Return Log File
+        BE -> FE: Send Export
+        FE -> Admin: Download Logs
+    else Filter Logs
+        BE -> DB: Apply Filters
+        DB -> BE: Return Filtered Logs
+        BE -> FE: Send Filtered Data
+        FE -> Admin: Display Filtered Logs
+    end
+end
+
+== Backup Management ==
+
+Admin -> FE: Access Backup
+FE -> BE: Request Backup Status
+BE -> DB: Check Backup State
+DB -> BE: Return Status
+BE -> FE: Send Backup Info
+FE -> Admin: Display Backup Status
+
+alt Backup Actions
+    Admin -> FE: Select Backup Action
+    FE -> BE: Process Backup Request
+    alt Create Backup
+        BE -> DB: Initiate Backup
+        DB -> BE: Backup Complete
+        BE -> FE: Send Confirmation
+        FE -> Admin: Display Success
+    else Restore Backup
+        BE -> DB: Restore System
+        DB -> BE: Restore Complete
+        BE -> FE: Send Confirmation
+        FE -> Admin: Display Success
+    end
+end
+
+note right of Admin
+  System Management Features:
+  - System Configuration
+  - AI Model Control
+  - System Monitoring
+  - Log Management
+  - Backup Operations
+end note
+
+@enduml 

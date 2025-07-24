@@ -1,0 +1,151 @@
+@startuml Equipment_Categories_ERD
+
+' Page settings
+skinparam pageMargin 10
+skinparam pageExternalColor white
+skinparam pageBorderColor white
+skinparam page {
+    width 900
+    height 1400
+}
+
+' Styling
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Core>> #B4D6FF
+    BackgroundColor<<Junction>> #B4FFB4
+    BackgroundColor<<Lookup>> #FFFFB4
+    BackgroundColor<<Media>> #FFD6FF
+    BorderColor #666666
+    ArrowColor #666666
+    FontSize 11
+    AttributeFontSize 10
+}
+
+' Core Entities
+package "Core Entities" {
+    class equipment << Core >> {
+        ○ PK id: uuid
+        --
+        name: varchar(100)
+        description: text
+        brand: varchar(100)
+        model: varchar(100)
+        weight: decimal
+        dimensions: jsonb
+        maxUserWeight: decimal
+        maintenance_info: text
+        safety_guidelines: text[]
+        status: enum['available','maintenance','retired']
+        metadata: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Lookup Tables
+package "Categories and Classifications" {
+    class equipment_categories << Lookup >> {
+        ○ PK id: uuid
+        --
+        name: varchar(50)
+        description: text
+        parent_category_id: uuid
+        level: int
+        icon: varchar(255)
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class muscle_groups << Lookup >> {
+        ○ PK id: uuid
+        --
+        name: varchar(50)
+        description: text
+        body_part: varchar(50)
+        primary_functions: text[]
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Media Related
+package "Equipment Media" {
+    class media << Media >> {
+        ○ PK id: uuid
+        --
+        FK equipment_id: uuid
+        type: enum['image','video','manual']
+        url: varchar(255)
+        filename: varchar(255)
+        size: bigint
+        metadata: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Junction Tables
+package "Equipment Relationships" {
+    class equipment_category << Junction >> {
+        ○ PK id: uuid
+        --
+        FK equipment_id: uuid
+        FK category_id: uuid
+        is_primary: boolean
+        createdAt: timestamp
+    }
+
+    class equipment_muscle_group << Junction >> {
+        ○ PK id: uuid
+        --
+        FK equipment_id: uuid
+        FK muscle_group_id: uuid
+        impact_level: enum['primary','secondary']
+        effectiveness_rating: decimal
+        createdAt: timestamp
+    }
+
+    class workout_equipment << Junction >> {
+        ○ PK id: uuid
+        --
+        FK workout_id: uuid
+        FK equipment_id: uuid
+        quantity_required: int
+        is_required: boolean
+        alternative_ids: uuid[]
+        notes: text
+        createdAt: timestamp
+    }
+
+    class exercise_equipment << Junction >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        FK equipment_id: uuid
+        is_required: boolean
+        quantity: int
+        setup_instructions: text
+        notes: text
+        createdAt: timestamp
+    }
+}
+
+' Relationships with specific cardinality constraints
+equipment "1" o-- "1..3" equipment_category : "belongs to (1-3 categories)" >
+equipment "1" o-- "1..*" equipment_muscle_group : "targets (at least 1 muscle)" >
+equipment "1" o-- "0..*" workout_equipment : "used in workouts" >
+equipment "1" o-- "0..*" exercise_equipment : "used in exercises" >
+equipment "1" o-- "0..5" media : "documented by (max 5)" >
+
+equipment_categories "1" o-- "0..*" equipment_category : "classifies" >
+muscle_groups "1" o-- "1..*" equipment_muscle_group : "targeted by (at least 1)" >
+
+' Layout hints
+equipment -[hidden]d- equipment_category
+equipment_categories -[hidden]d- equipment_muscle_group
+muscle_groups -[hidden]d- equipment_muscle_group
+
+@enduml 

@@ -1,0 +1,66 @@
+@startuml WorkoutDetails
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Workout Details Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "Media Server" as MS
+
+== Workout Information ==
+
+User -> FE: Select Workout
+FE -> BE: Request Workout Details
+BE -> DB: Fetch Workout Data
+DB -> BE: Return Workout Info
+BE -> FE: Send Workout Details
+FE -> User: Display Workout Info
+
+== Video Content ==
+
+FE -> MS: Request Workout Video
+MS -> FE: Stream Video Content
+FE -> User: Display Video Player
+
+== Exercise List ==
+
+FE -> BE: Request Exercise List
+BE -> DB: Fetch Exercise Data
+DB -> BE: Return Exercise Info
+BE -> FE: Send Exercise List
+FE -> User: Display Exercise List
+
+== Additional Details ==
+
+User -> FE: View Exercise Details
+FE -> BE: Request Exercise Info
+BE -> DB: Fetch Exercise Details
+DB -> BE: Return Exercise Data
+BE -> FE: Send Exercise Details
+FE -> User: Display Exercise Info
+
+note right of User
+  Details Features:
+  - Workout Information
+  - Video Demonstration
+  - Exercise List
+  - Detailed Instructions
+end note
+
+@enduml 

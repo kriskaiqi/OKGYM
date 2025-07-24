@@ -1,0 +1,67 @@
+@startuml CompleteWorkoutSession
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Complete Workout Session Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Complete Final Exercise;
+
+|System|
+:Calculate Session Statistics:
+- Total Duration
+- Exercises Completed
+- Calories Burned
+- Overall Performance;
+
+:Display Completion Prompt;
+
+|User|
+:Click Complete Button;
+
+|System|
+:Mark Session as Completed;
+
+:Save Session Data:
+- Exercise Performance
+- Form Scores
+- Duration
+- Statistics;
+
+:Generate Workout Summary;
+
+:Display Success Message;
+
+:Redirect to Summary Screen;
+
+stop
+
+note right
+  Session Completion:
+  - Final Statistics Calculation
+  - Data Saving
+  - Summary Generation
+  - History Update
+end note
+
+@enduml 

@@ -1,0 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const WorkoutPlanController_1 = require("../controllers/WorkoutPlanController");
+const WorkoutPlanService_1 = require("../services/WorkoutPlanService");
+const auth_1 = require("../middleware/auth");
+const validation_1 = require("../middleware/validation");
+const WorkoutPlanController_2 = require("../controllers/WorkoutPlanController");
+const router = (0, express_1.Router)();
+const workoutPlanService = new WorkoutPlanService_1.WorkoutPlanService();
+const workoutPlanController = new WorkoutPlanController_1.WorkoutPlanController(workoutPlanService);
+router.use(auth_1.authenticate);
+router.post('/', (0, validation_1.validateRequest)(WorkoutPlanController_2.CreateWorkoutPlanDto), workoutPlanController.createWorkoutPlan.bind(workoutPlanController));
+router.get('/:id', workoutPlanController.getWorkoutPlan.bind(workoutPlanController));
+router.put('/:id', (0, validation_1.validateRequest)(WorkoutPlanController_2.UpdateWorkoutPlanDto), workoutPlanController.updateWorkoutPlan.bind(workoutPlanController));
+router.delete('/:id', workoutPlanController.deleteWorkoutPlan.bind(workoutPlanController));
+router.get('/', workoutPlanController.getWorkoutPlans.bind(workoutPlanController));
+router.post('/:id/exercises', (0, validation_1.validateRequest)(WorkoutPlanController_2.AddExerciseDto), workoutPlanController.addExercise.bind(workoutPlanController));
+router.put('/:id/exercises/:exerciseId', (0, validation_1.validateRequest)(WorkoutPlanController_2.UpdateExerciseDto), workoutPlanController.updateExercise.bind(workoutPlanController));
+router.delete('/:id/exercises/:exerciseId', workoutPlanController.removeExercise.bind(workoutPlanController));
+router.put('/:id/exercises/reorder', (0, validation_1.validateRequest)(WorkoutPlanController_2.ReorderExercisesDto), workoutPlanController.reorderExercises.bind(workoutPlanController));
+exports.default = router;
+//# sourceMappingURL=workoutRoutes.js.map

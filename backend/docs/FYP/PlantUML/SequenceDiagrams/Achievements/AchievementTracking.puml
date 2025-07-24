@@ -1,0 +1,87 @@
+@startuml AchievementTracking
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Achievement Tracking Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Achievement Overview ==
+
+User -> FE: Access Achievements
+FE -> BE: Request Achievement Status
+BE -> DB: Fetch Achievements
+DB -> BE: Return Achievement Data
+BE -> FE: Send Achievement List
+FE -> User: Display Achievements
+
+== Progress Monitoring ==
+
+BE -> BE: Monitor User Activity
+BE -> DB: Check Achievement Criteria
+DB -> BE: Return Progress Data
+BE -> BE: Evaluate Progress
+alt Achievement Earned
+    BE -> DB: Mark Achievement Complete
+    DB -> BE: Update Status
+    BE -> FE: Send Achievement Notification
+    FE -> User: Display Achievement Unlocked
+else Progress Updated
+    BE -> FE: Send Progress Update
+    FE -> User: Display Progress
+end
+
+== Achievement Details ==
+
+User -> FE: View Achievement Details
+FE -> BE: Request Details
+BE -> DB: Fetch Achievement Info
+DB -> BE: Return Details
+BE -> FE: Send Achievement Data
+FE -> User: Display Detailed View
+
+== Achievement History ==
+
+User -> FE: View Achievement History
+FE -> BE: Request History
+BE -> DB: Fetch History
+DB -> BE: Return History
+BE -> FE: Send History Data
+FE -> User: Display Achievement Timeline
+
+== Achievement Rewards ==
+
+alt New Achievement
+    BE -> BE: Process Rewards
+    BE -> DB: Update User Rewards
+    DB -> BE: Rewards Updated
+    BE -> FE: Send Reward Notification
+    FE -> User: Display Rewards Earned
+end
+
+note right of User
+  Achievement Features:
+  - Progress Tracking
+  - Achievement Unlocking
+  - Detailed Views
+  - History Tracking
+  - Reward Distribution
+end note
+
+@enduml 

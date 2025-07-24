@@ -1,0 +1,83 @@
+@startuml ViewExerciseDetails
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title View Exercise Details Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Select Exercise from List;
+
+|System|
+:Retrieve Exercise Details;
+
+if (Exercise Exists?) then (yes)
+  :Display Exercise Information:
+  - Name and Description
+  - Target Muscle Groups
+  - Difficulty Level
+  - Equipment Required
+  - Form Instructions
+  - Demonstration Media;
+  
+  |User|
+  :Review Exercise Details;
+  
+  fork
+    |User|
+    :View Form Instructions;
+    
+    |System|
+    :Display Step-by-Step Guide:
+    - Setup Position
+    - Movement Pattern
+    - Common Mistakes
+    - Safety Tips;
+  fork again
+    |User|
+    :Watch Demonstration;
+    
+    |System|
+    :Play Demonstration Video:
+    - Full Movement
+    - Different Angles
+    - Common Variations;
+  end fork
+  
+  stop
+else (no)
+  :Display "Exercise Not Available" Message;
+  :Redirect to Exercise List;
+  
+  stop
+endif
+
+note right
+  Exercise Details Include:
+  - Form Instructions
+  - Muscle Targeting
+  - Equipment Requirements
+  - Safety Guidelines
+  - Demonstration Media
+end note
+
+@enduml 

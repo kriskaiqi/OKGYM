@@ -1,0 +1,73 @@
+@startuml SaveFavoriteWorkouts
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Save Favorite Workouts Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:View Workout Details;
+
+|System|
+:Display Favorite Button;
+
+|User|
+:Click Favorite Button;
+
+|System|
+:Check if Already Favorited;
+
+if (Already Favorited?) then (yes)
+  :Remove from Favorites;
+  :Update Favorite Button (Unfilled);
+  :Display "Removed from Favorites" Message;
+else (no)
+  :Add to Favorites;
+  :Update Favorite Button (Filled);
+  :Display "Added to Favorites" Message;
+endif
+
+|User|
+:Access Favorites Section;
+
+|System|
+:Retrieve Favorite Workouts;
+
+:Display Favorite Workouts List;
+
+|User|
+:Select Favorite Workout;
+
+|System|
+:Display Selected Workout Details;
+
+stop
+
+note right
+  Favorite Workout Features:
+  - Quick Access to Saved Workouts
+  - Visual Indicator of Favorite Status
+  - Easy Removal from Favorites
+  - Dedicated Favorites Section
+end note
+
+@enduml 

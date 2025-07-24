@@ -1,0 +1,86 @@
+@startuml FilterWorkoutPlans
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Filter Workout Plans Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Workouts Section;
+
+|System|
+:Display Filter Options:
+- Difficulty Level
+- Duration
+- Muscle Groups
+- Equipment Required
+- Workout Type;
+
+|User|
+:Select Filter Criteria;
+
+|System|
+:Apply Selected Filters;
+
+:Retrieve Filtered Workouts;
+
+if (Matching Workouts Found?) then (yes)
+  :Display Filtered Results;
+  
+  |User|
+  :Review Filtered List;
+  
+  fork
+    |User|
+    :Adjust Filter Criteria;
+    
+    |System|
+    :Update Results;
+  fork again
+    |User|
+    :Clear All Filters;
+    
+    |System|
+    :Reset to Default View;
+  end fork
+  
+  stop
+else (no)
+  :Display "No Matching Workouts" Message;
+  
+  |User|
+  :Modify Filter Criteria;
+  
+  |System|
+  :Retry Search with New Criteria;
+endif
+
+note right
+  Filter Criteria:
+  - Difficulty (Beginner to Advanced)
+  - Duration (Short, Medium, Long)
+  - Target Muscle Groups
+  - Equipment Requirements
+  - Workout Type (Strength, Cardio, etc.)
+end note
+
+@enduml 

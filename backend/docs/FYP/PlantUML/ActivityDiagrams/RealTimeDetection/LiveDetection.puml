@@ -1,0 +1,131 @@
+@startuml LiveDetection
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Live Detection Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|System|
+:Initialize Real-time Detection;
+
+fork
+  :Capture Camera Feed;
+  :Process Video Frames;
+  :Detect Skeletal Points;
+  :Track Movement Patterns;
+fork again
+  :Analyze Exercise Form;
+  :Calculate Real-time Metrics;
+  :Generate Immediate Feedback;
+end fork
+
+:Combine Analysis Results;
+
+|User|
+:Begin Exercise Performance;
+
+|System|
+:Monitor Exercise in Real-time;
+
+fork
+  |User|
+  :Perform Exercise;
+  
+  |System|
+  :Track Exercise Progress:
+  - Repetition Counting
+  - Form Analysis
+  - Stage Detection
+  - Angle Measurements;
+  
+  :Provide Real-time Feedback:
+  - Visual Cues
+  - Audio Guidance
+  - Text Instructions;
+  
+  if (Form Issue Detected?) then (yes)
+    :Highlight Problem Areas;
+    :Provide Correction Instructions;
+    
+    |User|
+    :Adjust Form;
+    
+    |System|
+    :Reevaluate Form;
+  else (no)
+    :Continue Monitoring;
+  endif
+fork again
+  |User|
+  :View Real-time Metrics;
+  
+  |System|
+  :Update Metrics Display:
+  - Form Score
+  - Rep Count
+  - Current Stage
+  - Joint Angles
+  - Form Checks;
+end fork
+
+|User|
+:Complete Exercise Set;
+
+|System|
+:Generate Set Summary:
+- Total Repetitions
+- Average Form Score
+- Form Issues Found
+- Performance Metrics;
+
+|User|
+:Review Set Summary;
+
+|System|
+:Save Set Data;
+
+if (More Sets Planned?) then (yes)
+  :Reset Counters;
+  :Prepare for Next Set;
+  repeat
+    |User|
+    :Begin Next Set;
+    
+    |System|
+    :Monitor Exercise;
+  repeat while (Sets Remaining?) is (yes)
+else (no)
+  :Finalize Exercise Data;
+  :Save to Workout History;
+  stop
+endif
+
+note right
+  Real-time Features:
+  - Skeletal Tracking
+  - Form Analysis
+  - Repetition Counting
+  - Immediate Feedback
+  - Performance Metrics
+end note
+
+@enduml 

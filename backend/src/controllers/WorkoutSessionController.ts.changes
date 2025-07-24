@@ -1,0 +1,8 @@
+status: ExerciseStatus.ACTIVE,
+
+if (session.status !== SessionStatus.ACTIVE) {
+
+session.status = SessionStatus.ACTIVE;
+
+if (session.status !== SessionStatus.ACTIVE && session.status !== SessionStatus.PAUSED) {
+} 

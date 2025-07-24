@@ -1,0 +1,70 @@
+@startuml AchievementViewing
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Achievement Viewing Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Achievements;
+
+|System|
+:Display Achievement Overview;
+
+fork
+  |User|
+  :View All Achievements;
+  
+  |System|
+  :Display Achievement List:
+  - Completed
+  - In Progress
+  - Locked;
+fork again
+  |User|
+  :View Achievement Details;
+  
+  |System|
+  :Show Achievement Information:
+  - Requirements
+  - Progress
+  - Rewards
+  - Completion Date;
+end fork
+
+|User|
+:Interact with Achievement;
+
+|System|
+:Update Achievement Display;
+
+stop
+
+note right
+  Achievement Features:
+  - Progress Tracking
+  - Detailed Requirements
+  - Completion Status
+  - Achievement Categories
+end note
+
+@enduml 

@@ -1,0 +1,74 @@
+@startuml DetectionSetup
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Detection Setup Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "Camera System" as CS
+participant "AI Model" as AI
+
+== Exercise Selection ==
+
+User -> FE: Select Exercise
+FE -> BE: Request Exercise Data
+BE -> DB: Fetch Exercise Info
+DB -> BE: Return Exercise Data
+BE -> FE: Send Exercise Details
+FE -> User: Display Exercise Info
+
+== Method Configuration ==
+
+User -> FE: Choose Detection Method
+FE -> BE: Submit Method Selection
+BE -> AI: Initialize Model
+AI -> BE: Model Ready
+BE -> FE: Method Configured
+FE -> User: Display Method Status
+
+== Camera Setup ==
+
+FE -> CS: Request Camera Access
+CS -> FE: Camera Status
+alt Camera Available
+    FE -> CS: Initialize Camera
+    CS -> FE: Camera Ready
+    FE -> User: Display Camera Feed
+else Camera Unavailable
+    FE -> User: Display Error Message
+end
+
+== AI Model Setup ==
+
+BE -> AI: Load Exercise Model
+AI -> BE: Model Loaded
+BE -> AI: Configure Parameters
+AI -> BE: Parameters Set
+BE -> FE: Setup Complete
+FE -> User: Display Ready Status
+
+note right of User
+  Setup Features:
+  - Exercise Selection
+  - Detection Method
+  - Camera Configuration
+  - AI Model Setup
+end note
+
+@enduml 

@@ -1,0 +1,177 @@
+@startuml Exercise_Management_ERD
+
+' Page settings
+skinparam pageMargin 10
+skinparam pageExternalColor white
+skinparam pageBorderColor white
+skinparam page {
+    width 900
+    height 1400
+}
+
+' Styling
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Core>> #B4D6FF
+    BackgroundColor<<Junction>> #B4FFB4
+    BackgroundColor<<Lookup>> #FFFFB4
+    BackgroundColor<<Media>> #FFD6FF
+    BorderColor #666666
+    ArrowColor #666666
+    FontSize 11
+    AttributeFontSize 10
+}
+
+' Core Entities
+package "Core Entities" {
+    class exercises << Core >> {
+        ○ PK id: uuid
+        --
+        name: varchar(100)
+        description: text
+        difficulty: enum['beginner','intermediate','advanced']
+        type: enum['strength','cardio','flexibility','balance']
+        instructions: text
+        targetMuscles: varchar[]
+        secondaryMuscles: varchar[]
+        equipment_required: boolean
+        form_tips: text[]
+        safety_tips: text[]
+        variations: jsonb
+        metrics: jsonb
+        estimatedDuration: interval
+        caloriesPerMinute: decimal
+        rest_duration: interval
+        sets_default: int
+        reps_default: int
+        tempo: varchar(20)
+        status: enum['active','draft','archived']
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class equipment << Core >> {
+        ○ PK id: uuid
+        --
+        name: varchar(100)
+        description: text
+        category: varchar(50)
+        weight: decimal
+        dimensions: jsonb
+        maxUserWeight: decimal
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Media Tables
+package "Media Content" {
+    class media << Media >> {
+        ○ PK id: uuid
+        --
+        type: enum['image','video','audio']
+        url: varchar(255)
+        thumbnailUrl: varchar(255)
+        filename: varchar(255)
+        mimeType: varchar(50)
+        size: bigint
+        duration: interval
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class audio_cues << Media >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        name: varchar(100)
+        description: text
+        timing: interval
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Lookup Tables
+package "Categories and Tags" {
+    class exercise_categories << Lookup >> {
+        ○ PK id: uuid
+        --
+        name: varchar(50)
+        description: text
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class equipment_categories << Lookup >> {
+        ○ PK id: uuid
+        --
+        name: varchar(50)
+        description: text
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Junction Tables
+package "Exercise Relationships" {
+    class exercise_equipment << Junction >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        FK equipment_id: uuid
+        required: boolean
+        quantity: int
+        notes: text
+        createdAt: timestamp
+    }
+
+    class exercise_media << Junction >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        FK media_id: uuid
+        sequence: int
+        isPrimary: boolean
+        createdAt: timestamp
+    }
+
+    class exercise_category << Junction >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        FK category_id: uuid
+        createdAt: timestamp
+    }
+
+    class equipment_category << Junction >> {
+        ○ PK id: uuid
+        --
+        FK equipment_id: uuid
+        FK category_id: uuid
+        createdAt: timestamp
+    }
+}
+
+' Relationships with specific cardinality constraints
+exercises "1" o-- "0..5" exercise_equipment : "requires (max 5 equipment)" >
+exercises "1" o-- "1..3" exercise_media : "illustrated by (1-3 media)" >
+exercises "1" o-- "1..3" exercise_category : "categorized as (1-3 categories)" >
+exercises "1" *-- "0..5" audio_cues : "guided by (max 5 cues)" >
+
+equipment "1" o-- "1..*" exercise_equipment : "used in (at least 1 exercise)" >
+equipment "1" o-- "1..1" equipment_category : "belongs to (exactly 1 category)" >
+
+media "1" o-- "1..*" exercise_media : "demonstrates (at least 1 exercise)" >
+
+exercise_categories "1" o-- "1..*" exercise_category : "groups (at least 1 exercise)" >
+equipment_categories "1" o-- "1..*" equipment_category : "classifies (at least 1 equipment)" >
+
+' Layout hints
+exercises -[hidden]d- exercise_equipment
+equipment -[hidden]d- exercise_equipment
+media -[hidden]d- exercise_media
+
+@enduml 

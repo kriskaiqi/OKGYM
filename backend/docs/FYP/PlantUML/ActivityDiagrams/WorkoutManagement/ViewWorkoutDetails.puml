@@ -1,0 +1,89 @@
+@startuml ViewWorkoutDetails
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title View Workout Details Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Select Workout from List;
+
+|System|
+:Retrieve Workout Details;
+
+if (Workout Exists?) then (yes)
+  :Display Workout Information:
+  - Name and Description
+  - Difficulty Level
+  - Estimated Duration
+  - Target Muscle Groups
+  - Required Equipment
+  - Exercise List;
+  
+  |User|
+  :Review Workout Details;
+  
+  fork
+    |User|
+    :View Exercise List;
+    
+    |System|
+    :Display Exercise Details:
+    - Exercise Name
+    - Sets and Reps
+    - Form Instructions
+    - Demonstration Media;
+  fork again
+    |User|
+    :Check Equipment Requirements;
+    
+    |System|
+    :Display Equipment List:
+    - Required Equipment
+    - Alternative Options
+    - Equipment Details;
+  end fork
+  
+  |User|
+  :Decide to Start Workout;
+  
+  |System|
+  :Prepare Workout Session;
+  
+  stop
+else (no)
+  :Display "Workout Not Available" Message;
+  :Redirect to Workout List;
+  
+  stop
+endif
+
+note right
+  Workout Details Include:
+  - Basic Information
+  - Exercise Breakdown
+  - Equipment Requirements
+  - Difficulty Indicators
+  - Duration Estimate
+end note
+
+@enduml 

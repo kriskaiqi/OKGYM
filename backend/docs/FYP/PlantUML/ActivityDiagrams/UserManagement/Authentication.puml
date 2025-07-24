@@ -1,0 +1,98 @@
+@startuml Authentication
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Authentication Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+' Login Flow
+start
+
+|User|
+:Navigate to Login Page;
+
+|System|
+:Display Login Form;
+
+|User|
+:Enter Credentials:
+- Email
+- Password;
+
+|System|
+:Validate Credentials;
+
+if (Credentials Valid?) then (yes)
+  :Check Account Status;
+  
+  if (Account Active?) then (yes)
+    :Create User Session;
+    :Generate Session Token;
+    :Store Session Data;
+    :Redirect to Dashboard;
+    
+    |User|
+    :Access Application;
+    
+    fork
+      |System|
+      :Monitor Session Activity;
+      
+      if (Session Active?) then (yes)
+        :Maintain Session;
+      else (no)
+        :Logout User;
+        stop
+      endif
+    fork again
+      |User|
+      :Use Application;
+    end fork
+  else (no)
+    :Display "Account Not Active" Message;
+    :Return to Login Page;
+  endif
+else (no)
+  :Display "Invalid Credentials" Error;
+  :Return to Login Page;
+endif
+
+|User|
+:Retry Login or Request Password Reset;
+
+' Logout Flow
+|User|
+:Click Logout Button;
+
+|System|
+:Destroy Session;
+:Clear Session Data;
+:Redirect to Login Page;
+
+stop
+
+note right
+  Session Management:
+  - Session timeout: 30 minutes
+  - Automatic logout on inactivity
+  - Session data encrypted
+end note
+
+@enduml 

@@ -1,0 +1,158 @@
+import logger from './logger';
+import { serviceMetrics } from './service-metrics';
+
+/**
+ * Performance tracking utility for measuring execution times
+ */
+export class PerformanceTracker {
+  private static readonly SLOW_THRESHOLD_MS = 100; // Threshold for slow operation warnings
+  
+  /**
+   * Track execution time of an async function
+   * 
+   * @param operation Name of the operation being tracked
+   * @param fn Async function to execute and track
+   * @param context Additional context data for logging
+   * @returns Result of the async function
+   */
+  static async track<T>(
+    operation: string, 
+    fn: () => Promise<T>, 
+    context: Record<string, any> = {}
+  ): Promise<T> {
+    const start = Date.now();
+    
+    // Extract service and method names if available (format: ServiceName.methodName)
+    const parts = operation.split('.');
+    const hasServiceFormat = parts.length > 1;
+    
+    // Setup tracking with service metrics if in the right format
+    const metricsTracking = hasServiceFormat ? 
+      serviceMetrics.recordStart(parts[0], parts[1]) : 
+      null;
+    
+    try {
+      const result = await fn();
+      
+      // Record success in service metrics
+      if (metricsTracking) {
+        serviceMetrics.recordEnd(metricsTracking, true);
+      }
+      
+      return result;
+    } catch (error) {
+      // Record failure in service metrics
+      if (metricsTracking) {
+        serviceMetrics.recordEnd(metricsTracking, false);
+      }
+      
+      throw error;
+    } finally {
+      const duration = Date.now() - start;
+      
+      // Log performance data
+      if (duration >= this.SLOW_THRESHOLD_MS) {
+        logger.warn(`Slow operation detected: ${operation} took ${duration}ms`, {
+          operation,
+          duration,
+          ...context
+        });
+      } else {
+        logger.debug(`Operation ${operation} completed in ${duration}ms`, {
+          operation,
+          duration,
+          ...context
+        });
+      }
+    }
+  }
+  
+  /**
+   * Create a decorator for tracking method performance
+   * 
+   * @param options Configuration options for the decorator
+   * @returns Method decorator
+   */
+  static trackMethod(options: { 
+    operation?: string, 
+    slow?: number,
+    logParams?: boolean
+  } = {}) {
+    return function (
+      target: any,
+      propertyKey: string,
+      descriptor: PropertyDescriptor
+    ) {
+      const originalMethod = descriptor.value;
+      const operationName = options.operation || `${target.constructor.name}.${propertyKey}`;
+      const slowThreshold = options.slow || PerformanceTracker.SLOW_THRESHOLD_MS;
+      
+      // Extract service and method names
+      const parts = operationName.split('.');
+      const hasServiceFormat = parts.length > 1;
+      const serviceName = hasServiceFormat ? parts[0] : target.constructor.name;
+      const methodName = hasServiceFormat ? parts[1] : propertyKey;
+      
+      descriptor.value = async function (...args: any[]) {
+        // Track with service metrics directly - this avoids duplicate tracking
+        // when the trackMethod decorator is used
+        return serviceMetrics.trackAsync(serviceName, methodName, async () => {
+          const start = Date.now();
+          
+          try {
+            return await originalMethod.apply(this, args);
+          } finally {
+            const duration = Date.now() - start;
+            
+            // Prepare context for logging
+            const context: Record<string, any> = { duration };
+            
+            // Optionally include params in debug logs (safely)
+            if (options.logParams && args.length) {
+              try {
+                context.params = args.map(arg => {
+                  // Filter out sensitive data
+                  if (arg && typeof arg === 'object') {
+                    const { password, ...filtered } = arg;
+                    return filtered;
+                  }
+                  return arg;
+                });
+              } catch (e) {
+                context.params = 'Failed to serialize params';
+              }
+            }
+            
+            // Log performance data
+            if (duration >= slowThreshold) {
+              logger.warn(`Slow operation: ${operationName} took ${duration}ms`, {
+                operation: operationName,
+                ...context
+              });
+            } else {
+              logger.debug(`Operation ${operationName} completed in ${duration}ms`, {
+                operation: operationName,
+                ...context
+              });
+            }
+          }
+        });
+      };
+      
+      return descriptor;
+    };
+  }
+}
+
+/**
+ * Decorator for tracking method performance
+ * 
+ * @param options Configuration options for tracking
+ */
+export function TrackPerformance(options: {
+  operation?: string,
+  slow?: number,
+  logParams?: boolean
+} = {}) {
+  return PerformanceTracker.trackMethod(options);
+} 

@@ -1,0 +1,96 @@
+@startuml FilterEquipment
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Filter Equipment Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Select Filter Options;
+
+|System|
+:Display Filter Criteria:
+- Equipment Type
+- Target Muscle Groups
+- Difficulty Level
+- Space Requirements
+- Specialized Features;
+
+|User|
+:Select Filter Criteria;
+
+|System|
+:Apply Selected Filters;
+
+if (Matching Equipment Found?) then (yes)
+  :Display Filtered Equipment List;
+  
+  |User|
+  :Review Filtered Results;
+  
+  fork
+    |User|
+    :Adjust Filter Criteria;
+    
+    |System|
+    :Update Filtered Results;
+  fork again
+    |User|
+    :Clear All Filters;
+    
+    |System|
+    :Reset to Full Equipment List;
+  end fork
+  
+  stop
+else (no)
+  :Display "No Matching Equipment" Message;
+  :Suggest Adjusting Criteria;
+  
+  |User|
+  :Modify Filter Criteria;
+  
+  repeat
+    |System|
+    :Reapply Filters;
+    
+    if (Matching Equipment Found?) then (yes)
+      :Display Filtered Equipment List;
+      break
+    else (no)
+      :Display "No Matching Equipment" Message;
+    endif
+  repeat while (No Results?) is (yes)
+  
+  stop
+endif
+
+note right
+  Filter Criteria:
+  - Equipment Type (machines, free weights, etc.)
+  - Target Muscle Groups
+  - Difficulty Level (beginner to advanced)
+  - Space Requirements
+  - Specialized Features
+end note
+
+@enduml 

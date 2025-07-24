@@ -1,0 +1,98 @@
+@startuml UserManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Admin User Management Sequence
+
+actor Admin
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Admin Authentication ==
+
+Admin -> FE: Access Admin Panel
+FE -> BE: Request Admin Access
+BE -> DB: Verify Admin Credentials
+DB -> BE: Return Verification
+alt Valid Admin
+    BE -> FE: Grant Access
+    FE -> Admin: Display Admin Dashboard
+else Invalid Admin
+    BE -> FE: Deny Access
+    FE -> Admin: Display Error Message
+end
+
+== User List Management ==
+
+Admin -> FE: Access User Management
+FE -> BE: Request User List
+BE -> DB: Fetch Users
+DB -> BE: Return User Data
+BE -> FE: Send User Information
+FE -> Admin: Display User List
+
+== User Actions ==
+
+alt User Actions
+    Admin -> FE: Select User Action
+    FE -> BE: Process Action Request
+    alt Suspend User
+        BE -> DB: Update User Status
+        DB -> BE: Status Updated
+        BE -> FE: Send Confirmation
+        FE -> Admin: Display Success Message
+    else Delete User
+        BE -> DB: Remove User Data
+        DB -> BE: User Deleted
+        BE -> FE: Send Confirmation
+        FE -> Admin: Display Success Message
+    else Edit User
+        BE -> DB: Update User Info
+        DB -> BE: Info Updated
+        BE -> FE: Send Confirmation
+        FE -> Admin: Display Success Message
+    end
+end
+
+== User Search ==
+
+Admin -> FE: Search Users
+FE -> BE: Submit Search Query
+BE -> DB: Search User Database
+DB -> BE: Return Search Results
+BE -> FE: Send Results
+FE -> Admin: Display Filtered Users
+
+== User Statistics ==
+
+Admin -> FE: Request User Stats
+FE -> BE: Get User Analytics
+BE -> DB: Fetch User Data
+DB -> BE: Return Analytics
+BE -> FE: Send Statistics
+FE -> Admin: Display User Metrics
+
+note right of Admin
+  User Management Features:
+  - User List Viewing
+  - User Actions (Suspend/Delete/Edit)
+  - User Search
+  - User Statistics
+  - Access Control
+end note
+
+@enduml 

@@ -1,0 +1,81 @@
+@startuml ProfileManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Profile Management Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Profile Updates ==
+
+User -> FE: Navigate to Profile
+FE -> BE: Request Profile Data
+BE -> DB: Fetch User Profile
+DB -> BE: Return Profile Data
+BE -> FE: Send Profile Data
+FE -> User: Display Profile Form
+
+User -> FE: Update Profile Information
+FE -> BE: Submit Profile Updates
+BE -> BE: Validate Updates
+
+alt Updates Valid
+    BE -> DB: Save Profile Changes
+    DB -> BE: Changes Saved
+    BE -> FE: Update Success
+    FE -> User: Display Success Message
+else Updates Invalid
+    BE -> FE: Validation Error
+    FE -> User: Display Error Message
+end
+
+== Settings Management ==
+
+User -> FE: Access Settings
+FE -> BE: Request User Settings
+BE -> DB: Fetch Settings
+DB -> BE: Return Settings
+BE -> FE: Send Settings
+FE -> User: Display Settings
+
+User -> FE: Modify Settings
+FE -> BE: Submit Settings Changes
+BE -> DB: Update Settings
+DB -> BE: Settings Updated
+BE -> FE: Update Success
+FE -> User: Apply New Settings
+
+== Theme Preferences ==
+
+User -> FE: Select Theme
+FE -> BE: Update Theme Preference
+BE -> DB: Save Theme Setting
+DB -> BE: Theme Saved
+BE -> FE: Theme Updated
+FE -> User: Apply New Theme
+
+note right of User
+  Profile Features:
+  - Personal Information
+  - Account Settings
+  - Theme Preferences
+  - Privacy Settings
+end note
+
+@enduml 

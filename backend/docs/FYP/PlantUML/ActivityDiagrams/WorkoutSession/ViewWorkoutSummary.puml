@@ -1,0 +1,76 @@
+@startuml ViewWorkoutSummary
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title View Workout Summary Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|System|
+:Display Most Recent Workout Summary;
+
+:Show Comprehensive Summary:
+- Date and Time
+- Duration
+- Calories Burned
+- Muscle Groups Worked
+- Focus Areas
+- Performance Statistics;
+
+|User|
+:Review Summary Details;
+
+fork
+  |User|
+  :Navigate Between Summaries;
+  
+  |System|
+  :Load Previous/Next Summary;
+fork again
+  |User|
+  :View Exercise Breakdown;
+  
+  |System|
+  :Display Exercise Details:
+  - Form Scores
+  - Repetition Count
+  - Weight Used
+  - Rest Periods;
+end fork
+
+|User|
+:Provide Feedback;
+
+|System|
+:Save Feedback with Summary;
+
+stop
+
+note right
+  Summary Information:
+  - Session Statistics
+  - Exercise Performance
+  - Form Analysis
+  - Progress Tracking
+  - User Feedback
+end note
+
+@enduml 

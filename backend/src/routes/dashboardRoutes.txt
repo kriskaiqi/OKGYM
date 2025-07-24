@@ -1,0 +1,38 @@
+import { Router } from 'express';
+import { authenticateToken } from '../middleware/auth';
+import { validateRequest } from '../middleware/validateRequest';
+import {
+  getRecentWorkouts,
+  getRecommendedWorkouts,
+  getScheduledWorkouts,
+  getAchievements,
+  getFitnessGoals,
+  getBodyMetrics,
+  getWeeklyActivity,
+  getNotifications,
+  getWorkoutStats
+} from '../controllers/dashboardController';
+import {
+  GetRecentWorkoutsDto,
+  GetRecommendedWorkoutsDto,
+  GetScheduledWorkoutsDto,
+  GetWorkoutStatsDto
+} from '../dto/dashboard.dto';
+
+const router = Router();
+
+// All routes require authentication
+router.use(authenticateToken);
+
+// Dashboard endpoints with validation
+router.get('/recent-workouts', validateRequest(GetRecentWorkoutsDto), getRecentWorkouts);
+router.get('/recommended-workouts', validateRequest(GetRecommendedWorkoutsDto), getRecommendedWorkouts);
+router.get('/scheduled-workouts', validateRequest(GetScheduledWorkoutsDto), getScheduledWorkouts);
+router.get('/achievements', getAchievements);
+router.get('/fitness-goals', getFitnessGoals);
+router.get('/body-metrics', getBodyMetrics);
+router.get('/weekly-activity', getWeeklyActivity);
+router.get('/notifications', getNotifications);
+router.get('/workout-stats', validateRequest(GetWorkoutStatsDto), getWorkoutStats);
+
+export default router; 

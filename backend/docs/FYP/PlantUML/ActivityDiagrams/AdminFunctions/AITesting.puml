@@ -1,0 +1,82 @@
+@startuml AITesting
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title AI Testing Process
+
+|#LightGreen|Admin|
+|#LightBlue|System|
+
+start
+
+|Admin|
+:Access AI Testing Interface;
+
+|System|
+:Display Testing Options:
+- Exercise Selection
+- Detection Method
+- Debug Mode
+- Performance Metrics;
+
+|Admin|
+:Select Test Parameters;
+
+|System|
+:Initialize Test Environment;
+
+fork
+  |Admin|
+  :Start Live Detection Test;
+  
+  |System|
+  :Process Camera Feed;
+  :Run Detection Algorithm;
+  :Display Real-time Metrics:
+  - Frame Processing Time
+  - Detection Confidence
+  - Keypoint Tracking
+  - Error Logs;
+fork again
+  |Admin|
+  :Upload Test Video;
+  
+  |System|
+  :Process Video File;
+  :Run Batch Analysis;
+  :Display Real-time Analysis:
+  - Accuracy Metrics
+  - Processing Speed
+  - Error Analysis
+  - Performance Statistics;
+end fork
+
+|Admin|
+:Review Test Metrics;
+
+stop
+
+note right
+  Testing Features:
+  - Live Performance Monitoring
+  - Real-time Debug Information
+  - Instant Metrics Display
+  - No Result Storage
+end note
+
+@enduml 

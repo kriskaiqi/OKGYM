@@ -1,0 +1,157 @@
+@startuml RealTime_Detection_ERD
+
+' Page settings
+skinparam pageMargin 10
+skinparam pageExternalColor white
+skinparam pageBorderColor white
+skinparam page {
+    width 900
+    height 1400
+}
+
+' Styling
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Core>> #B4D6FF
+    BackgroundColor<<Config>> #E6FFCC
+    BackgroundColor<<Detection>> #FFE6E6
+    BackgroundColor<<Analysis>> #FFE6CC
+    BorderColor #666666
+    ArrowColor #666666
+    FontSize 11
+    AttributeFontSize 10
+}
+
+' Core Entities
+package "Core Entities" {
+    class exercises << Core >> {
+        ○ PK id: uuid
+        --
+        name: varchar(100)
+        type: enum['strength','cardio','flexibility','balance']
+        form_tips: text[]
+        safety_tips: text[]
+        metrics: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class workout_sessions << Core >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        status: enum['planned','in_progress','completed','cancelled']
+        exerciseResults: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Configuration
+package "Detection Configuration" {
+    class ai_model_config << Config >> {
+        ○ PK id: uuid
+        --
+        model_name: varchar(100)
+        version: varchar(20)
+        type: enum['pose','object','movement']
+        parameters: jsonb
+        thresholds: jsonb
+        input_format: jsonb
+        output_format: jsonb
+        status: enum['active','inactive']
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class detection_settings << Config >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        camera_config: jsonb
+        detection_zones: jsonb
+        tracking_points: jsonb[]
+        angle_thresholds: jsonb
+        movement_patterns: jsonb
+        feedback_rules: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class camera_config << Config >> {
+        ○ PK id: uuid
+        --
+        device_id: varchar(50)
+        resolution: varchar(20)
+        fps: int
+        position: jsonb
+        calibration: jsonb
+        status: enum['active','inactive']
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Detection Records
+package "Detection Results" {
+    class form_detection << Detection >> {
+        ○ PK id: uuid
+        --
+        FK session_id: uuid
+        FK exercise_id: uuid
+        FK model_config_id: uuid
+        timestamp: timestamp
+        pose_keypoints: jsonb
+        joint_angles: jsonb
+        movement_speed: jsonb
+        form_score: decimal
+        confidence: decimal
+        createdAt: timestamp
+    }
+
+    class rep_counting << Detection >> {
+        ○ PK id: uuid
+        --
+        FK session_id: uuid
+        FK exercise_id: uuid
+        rep_count: int
+        partial_reps: int
+        rep_quality: decimal[]
+        tempo_metrics: jsonb
+        timestamp: timestamp
+        createdAt: timestamp
+    }
+
+    class real_time_feedback << Detection >> {
+        ○ PK id: uuid
+        --
+        FK detection_id: uuid
+        feedback_type: enum['form','safety','guidance']
+        message: text
+        severity: enum['info','warning','error']
+        timestamp: timestamp
+        createdAt: timestamp
+    }
+}
+
+' Relationships with specific cardinality constraints
+exercises "1" *-- "1..1" detection_settings : "configured for" >
+exercises "1" o-- "0..*" form_detection : "analyzed in" >
+exercises "1" o-- "0..*" rep_counting : "counted in" >
+
+workout_sessions "1" *-- "1..*" form_detection : "tracks form" >
+workout_sessions "1" *-- "1..*" rep_counting : "counts reps" >
+
+ai_model_config "1" o-- "1..*" form_detection : "processes" >
+detection_settings "1" *-- "1..1" camera_config : "uses" >
+
+form_detection "1" *-- "0..*" real_time_feedback : "generates" >
+
+' Layout hints
+exercises -[hidden]d- detection_settings
+workout_sessions -[hidden]d- form_detection
+ai_model_config -[hidden]d- form_detection
+
+@enduml 

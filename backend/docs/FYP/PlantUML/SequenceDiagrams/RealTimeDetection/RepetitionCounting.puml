@@ -1,0 +1,69 @@
+@startuml RepetitionCounting
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Repetition Counting Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Camera System" as CS
+participant "AI Model" as AI
+participant "Database" as DB
+
+== Rep Detection ==
+
+CS -> FE: Stream Video Feed
+FE -> AI: Send Frame Data
+AI -> AI: Analyze Movement
+AI -> AI: Detect Rep Phase
+AI -> FE: Send Phase Data
+FE -> User: Display Rep Status
+
+== Rep Counting ==
+
+AI -> AI: Track Movement Cycle
+AI -> BE: Count Repetition
+BE -> DB: Store Rep Count
+BE -> FE: Update Counter
+FE -> User: Display Rep Count
+
+== Progress Tracking ==
+
+BE -> BE: Calculate Progress
+BE -> DB: Store Progress Data
+BE -> FE: Send Progress Update
+FE -> User: Display Progress
+
+== Set Completion ==
+
+alt Set Complete
+    BE -> FE: Send Set Complete
+    FE -> User: Display Set Summary
+else Set Incomplete
+    BE -> FE: Send Remaining Reps
+    FE -> User: Display Remaining Count
+end
+
+note right of User
+  Counting Features:
+  - Rep Detection
+  - Movement Tracking
+  - Progress Updates
+  - Set Completion
+end note
+
+@enduml 

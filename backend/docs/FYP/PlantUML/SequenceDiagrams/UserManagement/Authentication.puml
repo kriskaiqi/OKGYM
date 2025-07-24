@@ -1,0 +1,73 @@
+@startuml Authentication
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Authentication Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "Session Manager" as SM
+
+== Login Process ==
+
+User -> FE: Navigate to Login Page
+FE -> User: Display Login Form
+
+User -> FE: Enter Credentials
+FE -> BE: Submit Login Request
+BE -> DB: Verify Credentials
+
+alt Credentials Valid
+    DB -> BE: User Verified
+    BE -> SM: Create Session
+    SM -> BE: Session Created
+    BE -> FE: Login Success
+    FE -> User: Redirect to Dashboard
+else Credentials Invalid
+    DB -> BE: Invalid Credentials
+    BE -> FE: Login Error
+    FE -> User: Display Error Message
+end
+
+== Session Management ==
+
+loop Every Request
+    FE -> BE: Include Session Token
+    BE -> SM: Validate Session
+    SM -> BE: Session Valid
+    BE -> FE: Process Request
+end
+
+== Logout Process ==
+
+User -> FE: Click Logout
+FE -> BE: Send Logout Request
+BE -> SM: Invalidate Session
+SM -> BE: Session Invalidated
+BE -> FE: Logout Success
+FE -> User: Redirect to Login
+
+note right of User
+  Authentication Details:
+  - Email/Password Login
+  - Session Token Management
+  - Automatic Session Validation
+  - Secure Logout
+end note
+
+@enduml 

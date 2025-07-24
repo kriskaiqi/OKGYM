@@ -1,0 +1,75 @@
+@startuml DashboardView
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Dashboard View Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Dashboard Access ==
+
+User -> FE: Navigate to Dashboard
+FE -> BE: Request Dashboard Data
+BE -> DB: Fetch User Progress
+DB -> BE: Return Progress Data
+BE -> FE: Send Dashboard Content
+FE -> User: Display Dashboard
+
+== Progress Summary ==
+
+BE -> BE: Calculate Progress Metrics
+BE -> FE: Send Progress Summary
+FE -> User: Display Progress Overview
+
+== Statistics Display ==
+
+BE -> BE: Generate Statistics
+BE -> FE: Send Statistics Data
+FE -> User: Display Performance Stats
+
+== Comparative Analysis ==
+
+BE -> BE: Compare with Goals
+BE -> FE: Send Comparison Data
+FE -> User: Display Goal Progress
+
+== Data Refresh ==
+
+alt Auto Refresh
+    BE -> BE: Update Progress Data
+    BE -> FE: Send Updates
+    FE -> User: Update Dashboard
+else Manual Refresh
+    User -> FE: Request Refresh
+    FE -> BE: Fetch Latest Data
+    BE -> DB: Get Updated Progress
+    DB -> BE: Return New Data
+    BE -> FE: Send Updated Content
+    FE -> User: Update Display
+end
+
+note right of User
+  Dashboard Features:
+  - Progress Overview
+  - Performance Statistics
+  - Goal Comparison
+  - Real-time Updates
+end note
+
+@enduml 

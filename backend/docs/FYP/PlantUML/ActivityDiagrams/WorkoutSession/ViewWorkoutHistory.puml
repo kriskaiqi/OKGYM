@@ -1,0 +1,64 @@
+@startuml ViewWorkoutHistory
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title View Workout History Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to History Section;
+
+|System|
+:Retrieve Past Workout Sessions;
+
+if (History Exists?) then (yes)
+  :Display Workout History List:
+  - Workout Plan Name
+  - Date
+  - Completed Tag
+  - Duration
+  - Calories Burned;
+  
+  |User|
+  :Scroll Through History;
+  
+  |System|
+  :Load More History on Scroll;
+  
+  stop
+else (no)
+  :Display "No Workout History" Message;
+  :Suggest Starting a Workout;
+  
+  stop
+endif
+
+note right
+  History Information:
+  - Workout Plan Details
+  - Completion Status
+  - Performance Metrics
+  - Date and Time
+  - Duration and Calories
+end note
+
+@enduml 

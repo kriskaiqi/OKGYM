@@ -1,0 +1,83 @@
+@startuml WeightTracking
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Weight Tracking Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Weight Entry ==
+
+User -> FE: Access Weight Tracking
+FE -> BE: Request Weight History
+BE -> DB: Fetch Weight Data
+DB -> BE: Return History
+BE -> FE: Send Weight Records
+FE -> User: Display Weight Chart
+
+User -> FE: Enter New Weight
+FE -> BE: Submit Weight Data
+BE -> BE: Validate Weight
+alt Valid Entry
+    BE -> DB: Store Weight
+    DB -> BE: Weight Stored
+    BE -> FE: Send Success
+    FE -> User: Display Confirmation
+else Invalid Entry
+    BE -> FE: Send Error
+    FE -> User: Display Error Message
+end
+
+== Weight Analysis ==
+
+BE -> BE: Calculate Trends
+BE -> FE: Send Analysis
+FE -> User: Display Trend Line
+
+== Progress Visualization ==
+
+BE -> BE: Generate Progress Chart
+BE -> FE: Send Chart Data
+FE -> User: Display Progress Graph
+
+== Goal Comparison ==
+
+BE -> BE: Compare with Target
+BE -> FE: Send Comparison
+FE -> User: Display Goal Progress
+
+== Weight History ==
+
+User -> FE: Request History
+FE -> BE: Fetch Records
+BE -> DB: Get Weight Data
+DB -> BE: Return History
+BE -> FE: Send History
+FE -> User: Display Records
+
+note right of User
+  Weight Features:
+  - Weight Entry
+  - Trend Analysis
+  - Progress Visualization
+  - Goal Comparison
+  - History Tracking
+end note
+
+@enduml 

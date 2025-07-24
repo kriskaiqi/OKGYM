@@ -1,0 +1,264 @@
+import express from 'express';
+import { TrainingProgramService } from '../services/TrainingProgramService';
+import { authMiddleware } from '../middleware/authMiddleware';
+import logger from '../utils/logger';
+
+const router = express.Router();
+const trainingProgramService = new TrainingProgramService();
+
+/**
+ * @route GET /training-programs
+ * @desc Get all training programs
+ * @access Public
+ */
+router.get('/', async (req, res) => {
+  try {
+    const programs = await trainingProgramService.getAllPrograms();
+    res.json(programs);
+  } catch (error) {
+    logger.error('Error fetching training programs:', error);
+    res.status(500).json({ message: 'Error fetching training programs' });
+  }
+});
+
+/**
+ * @route GET /training-programs/:id
+ * @desc Get a specific training program by ID
+ * @access Public
+ */
+router.get('/:id', async (req, res) => {
+  try {
+    const program = await trainingProgramService.getProgramById(parseInt(req.params.id));
+    res.json(program);
+  } catch (error) {
+    logger.error(`Error fetching training program ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Training program not found' });
+  }
+});
+
+/**
+ * @route GET /training-programs/:id/workouts
+ * @desc Get workouts for a specific training program
+ * @access Public
+ */
+router.get('/:id/workouts', async (req, res) => {
+  try {
+    const workouts = await trainingProgramService.getProgramWorkouts(parseInt(req.params.id));
+    res.json(workouts);
+  } catch (error) {
+    logger.error(`Error fetching workouts for program ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Workout schedule not found' });
+  }
+});
+
+/**
+ * @route POST /training-programs
+ * @desc Create a new training program
+ * @access Admin
+ */
+router.post('/', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if user is admin
+    // if (req.user.role !== 'ADMIN') return res.status(403).json({ message: 'Unauthorized' });
+    
+    const newProgram = await trainingProgramService.createProgram(req.body);
+    res.status(201).json(newProgram);
+  } catch (error) {
+    logger.error('Error creating training program:', error);
+    res.status(400).json({ message: 'Error creating training program' });
+  }
+});
+
+/**
+ * @route POST /training-programs/:id/workouts
+ * @desc Add a workout to a training program
+ * @access Admin
+ */
+router.post('/:id/workouts', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if user is admin
+    // if (req.user.role !== 'ADMIN') return res.status(403).json({ message: 'Unauthorized' });
+    
+    const workout = await trainingProgramService.addWorkoutToProgram(
+      parseInt(req.params.id),
+      req.body
+    );
+    res.status(201).json(workout);
+  } catch (error) {
+    logger.error(`Error adding workout to program ${req.params.id}:`, error);
+    res.status(400).json({ message: 'Error adding workout to program' });
+  }
+});
+
+/**
+ * @route PUT /training-programs/:id
+ * @desc Update a training program
+ * @access Admin
+ */
+router.put('/:id', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if user is admin
+    // if (req.user.role !== 'ADMIN') return res.status(403).json({ message: 'Unauthorized' });
+    
+    const updatedProgram = await trainingProgramService.updateProgram(
+      parseInt(req.params.id),
+      req.body
+    );
+    res.json(updatedProgram);
+  } catch (error) {
+    logger.error(`Error updating training program ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Training program not found' });
+  }
+});
+
+/**
+ * @route PUT /training-programs/:id/workouts/:week/:day
+ * @desc Update a specific workout in a training program
+ * @access Admin
+ */
+router.put('/:id/workouts/:week/:day', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if user is admin
+    // if (req.user.role !== 'ADMIN') return res.status(403).json({ message: 'Unauthorized' });
+    
+    const updatedWorkout = await trainingProgramService.updateProgramWorkout(
+      parseInt(req.params.id),
+      parseInt(req.params.week),
+      req.params.day,
+      req.body
+    );
+    res.json(updatedWorkout);
+  } catch (error) {
+    logger.error(`Error updating workout in program ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Workout not found in program' });
+  }
+});
+
+/**
+ * @route DELETE /training-programs/:id
+ * @desc Delete a training program
+ * @access Admin
+ */
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if user is admin
+    // if (req.user.role !== 'ADMIN') return res.status(403).json({ message: 'Unauthorized' });
+    
+    await trainingProgramService.deleteProgram(parseInt(req.params.id));
+    res.status(204).end();
+  } catch (error) {
+    logger.error(`Error deleting training program ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Training program not found' });
+  }
+});
+
+/**
+ * @route POST /training-programs/:id/enroll
+ * @desc Enroll the current user in a training program
+ * @access Private
+ */
+router.post('/:id/enroll', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const programId = parseInt(req.params.id);
+    
+    const enrollment = await trainingProgramService.enrollUserInProgram(userId, programId);
+    res.status(201).json(enrollment);
+  } catch (error) {
+    logger.error(`Error enrolling in program ${req.params.id}:`, error);
+    res.status(400).json({ message: error.message || 'Error enrolling in program' });
+  }
+});
+
+/**
+ * @route GET /training-programs/enrollments
+ * @desc Get all training program enrollments for the current user
+ * @access Private
+ */
+router.get('/enrollments', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const enrollments = await trainingProgramService.getUserEnrollments(userId);
+    res.json(enrollments);
+  } catch (error) {
+    logger.error(`Error fetching enrollments for user ${req.user.id}:`, error);
+    res.status(500).json({ message: 'Error fetching enrollments' });
+  }
+});
+
+/**
+ * @route PUT /training-programs/enrollments/:id
+ * @desc Update a user's enrollment in a training program
+ * @access Private
+ */
+router.put('/enrollments/:id', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if the enrollment belongs to the user
+    const enrollmentId = parseInt(req.params.id);
+    const updatedEnrollment = await trainingProgramService.updateEnrollmentProgress(
+      enrollmentId,
+      req.body
+    );
+    res.json(updatedEnrollment);
+  } catch (error) {
+    logger.error(`Error updating enrollment ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Enrollment not found' });
+  }
+});
+
+/**
+ * @route POST /training-programs/enrollments/:id/complete-workout
+ * @desc Mark a workout as completed in a user's training program
+ * @access Private
+ */
+router.post('/enrollments/:id/complete-workout', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if the enrollment belongs to the user
+    const enrollmentId = parseInt(req.params.id);
+    const { week, day, ...completionData } = req.body;
+    
+    if (!week || !day) {
+      return res.status(400).json({ message: 'Week and day are required' });
+    }
+    
+    const updatedEnrollment = await trainingProgramService.completeWorkout(
+      enrollmentId,
+      week,
+      day,
+      completionData
+    );
+    res.json(updatedEnrollment);
+  } catch (error) {
+    logger.error(`Error completing workout for enrollment ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Enrollment not found' });
+  }
+});
+
+/**
+ * @route POST /training-programs/enrollments/:id/rate
+ * @desc Rate a training program after completion
+ * @access Private
+ */
+router.post('/enrollments/:id/rate', authMiddleware, async (req, res) => {
+  try {
+    // In a real app, check if the enrollment belongs to the user
+    const enrollmentId = parseInt(req.params.id);
+    const { rating, feedback } = req.body;
+    
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Valid rating (1-5) is required' });
+    }
+    
+    const updatedEnrollment = await trainingProgramService.rateProgram(
+      enrollmentId,
+      rating,
+      feedback
+    );
+    res.json(updatedEnrollment);
+  } catch (error) {
+    logger.error(`Error rating program for enrollment ${req.params.id}:`, error);
+    res.status(404).json({ message: 'Enrollment not found' });
+  }
+});
+
+export default router; 

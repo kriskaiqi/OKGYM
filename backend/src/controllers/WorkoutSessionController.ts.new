@@ -1,0 +1,138 @@
+import { Request, Response, NextFunction } from 'express';
+import { AppDataSource } from '../data-source';
+import { WorkoutSession } from '../models/WorkoutSession';
+import { WorkoutPlan } from '../models/WorkoutPlan';
+import { User } from '../models/User';
+import { Feedback } from '../models/Feedback';
+import { WorkoutRating } from '../models/WorkoutRating';
+import { BestResult, ExerciseResult } from '../models/WorkoutSession';
+import { SessionStatus, ExerciseStatus, FeedbackType } from '../models/shared/Enums';
+import { AppError, ErrorType } from '../utils/errors';
+import { AuthenticatedRequest } from '../middleware/auth';
+import logger from '../utils/logger';
+
+// ... existing code ...
+
+export const recordExerciseCompletion = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { sessionId, exerciseId } = req.params;
+        const exerciseData = req.body;
+        const userId = req.user.id;
+
+        // Get session and workout plan
+        const session = await AppDataSource.getRepository(WorkoutSession).findOne({
+            where: { id: sessionId, user: { id: userId } }
+        });
+
+        if (!session) {
+            throw new AppError(ErrorType.NOT_FOUND, 'Session not found', 404);
+        }
+
+        const workoutPlan = await AppDataSource.getRepository(WorkoutPlan).findOne({
+            where: { id: session.workoutPlanId }
+        });
+
+        if (!workoutPlan) {
+            throw new AppError(ErrorType.NOT_FOUND, 'Workout plan not found', 404);
+        }
+
+        // Initialize exercise results
+        if (!session.exerciseResults[exerciseId]) {
+            session.exerciseResults[exerciseId] = {
+                status: ExerciseStatus.ACTIVE,
+                attempts: [],
+                bestResult: new BestResult()
+            };
+        }
+
+        // ... rest of the method ...
+    } catch (error) {
+        logger.error('Error recording exercise completion:', error);
+        next(new AppError(ErrorType.SERVICE_ERROR, 'Error recording exercise completion', 500, error));
+    }
+};
+
+export const pauseSession = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { sessionId } = req.params;
+        const userId = req.user.id;
+
+        const session = await AppDataSource.getRepository(WorkoutSession).findOne({
+            where: { id: sessionId, user: { id: userId } }
+        });
+
+        if (!session) {
+            throw new AppError(ErrorType.NOT_FOUND, 'Session not found', 404);
+        }
+
+        if (session.status !== SessionStatus.ACTIVE) {
+            throw new AppError(ErrorType.VALIDATION_ERROR, 'Can only pause an active session', 400);
+        }
+
+        session.status = SessionStatus.PAUSED;
+        await AppDataSource.getRepository(WorkoutSession).save(session);
+
+        res.json(session);
+    } catch (error) {
+        logger.error('Error pausing session:', error);
+        next(new AppError(ErrorType.SERVICE_ERROR, 'Error pausing session', 500, error));
+    }
+};
+
+export const resumeSession = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { sessionId } = req.params;
+        const userId = req.user.id;
+
+        const session = await AppDataSource.getRepository(WorkoutSession).findOne({
+            where: { id: sessionId, user: { id: userId } }
+        });
+
+        if (!session) {
+            throw new AppError(ErrorType.NOT_FOUND, 'Session not found', 404);
+        }
+
+        if (session.status !== SessionStatus.PAUSED) {
+            throw new AppError(ErrorType.VALIDATION_ERROR, 'Can only resume a paused session', 400);
+        }
+
+        session.status = SessionStatus.ACTIVE;
+        await AppDataSource.getRepository(WorkoutSession).save(session);
+
+        res.json(session);
+    } catch (error) {
+        logger.error('Error resuming session:', error);
+        next(new AppError(ErrorType.SERVICE_ERROR, 'Error resuming session', 500, error));
+    }
+};
+
+export const completeSession = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { sessionId } = req.params;
+        const userId = req.user.id;
+
+        const session = await AppDataSource.getRepository(WorkoutSession).findOne({
+            where: { id: sessionId, user: { id: userId } }
+        });
+
+        if (!session) {
+            throw new AppError(ErrorType.NOT_FOUND, 'Session not found', 404);
+        }
+
+        if (session.status !== SessionStatus.ACTIVE && session.status !== SessionStatus.PAUSED) {
+            throw new AppError(ErrorType.VALIDATION_ERROR, 'Can only complete an active or paused session', 400);
+        }
+
+        session.status = SessionStatus.COMPLETED;
+        session.endTime = new Date();
+
+        await AppDataSource.getRepository(WorkoutSession).save(session);
+
+        res.json(session);
+    } catch (error) {
+        logger.error('Error completing session:', error);
+        next(new AppError(ErrorType.SERVICE_ERROR, 'Error completing session', 500, error));
+    }
+};
+
+// ... rest of the file ... 

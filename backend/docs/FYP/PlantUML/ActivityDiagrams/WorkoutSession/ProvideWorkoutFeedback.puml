@@ -1,0 +1,61 @@
+@startuml ProvideWorkoutFeedback
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Provide Workout Feedback Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:View Workout Summary;
+
+|System|
+:Display Feedback Options:
+- Smile Face (Positive)
+- Sad Face (Negative);
+
+|User|
+:Provide Feedback and Rate Difficulty;
+
+|System|
+:Check for Existing Feedback;
+
+if (Feedback Exists?) then (yes)
+  :Update Existing Feedback;
+else (no)
+  :Create New Feedback Record;
+endif
+
+:Save Feedback with Workout Session;
+
+:Display Confirmation Message;
+
+stop
+
+note right
+  Feedback Features:
+  - Simple Emotional Response
+  - Quick and Easy Input
+  - Session Association
+  - Visual Confirmation
+end note
+
+@enduml 

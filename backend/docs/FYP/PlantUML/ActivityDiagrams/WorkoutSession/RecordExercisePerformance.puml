@@ -1,0 +1,92 @@
+@startuml RecordExercisePerformance
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Record Exercise Performance Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|System|
+:Display Current Exercise;
+
+if (Real-time Detection Enabled?) then (yes)
+  fork
+    |System|
+    :Track Repetitions;
+    :Analyze Form;
+    :Provide Real-time Feedback;
+    
+    |User|
+    :Perform Exercise;
+    
+    |System|
+    :Record Performance Data:
+    - Rep Count
+    - Form Score
+    - Stage
+    - Angle Metrics;
+  fork again
+    |System|
+    :Display Real-time Metrics:
+    - Form Score
+    - Rep Count
+    - Stage
+    - Angle Metrics;
+    
+    |User|
+    :Monitor Performance;
+  end fork
+else (no)
+  |User|
+  :Perform Exercise;
+  
+  |System|
+  :Display Rest Timer;
+  
+  |User|
+  :Enter Performance Data:
+  - Sets Completed
+  - Reps Achieved
+  - Weight Used;
+  
+  |System|
+  :Record Manual Entry;
+endif
+
+|User|
+:Mark Exercise as Complete;
+
+|System|
+:Save Performance Data;
+
+:Display Next Exercise;
+
+stop
+
+note right
+  Performance Tracking:
+  - Automatic (with detection)
+  - Manual Entry (without detection)
+  - Real-time Feedback
+  - Progress Saving
+end note
+
+@enduml 

@@ -1,0 +1,31 @@
+@startuml
+title OKGYM System Flow
+
+actor User
+
+participant Frontend as FE
+participant "Backend\n(Node.js/Express)" as BE
+participant "Python ML Service\n(Flask/FastAPI)" as ML
+database "Postgres\n(TypeORM)" as DB
+
+== Authentication & Data Fetch ==
+User -> FE       : Login / Load Dashboard
+FE -> BE         : POST /api/auth/login
+BE -> DB         : SELECT user
+DB --> BE        : user + JWT
+BE --> FE        : JWT + user data
+FE -> BE         : GET /api/dashboard\n(Authorization: Bearer <token>)
+BE -> DB         : Aggregate metrics
+DB --> BE        : Dashboard data
+BE --> FE        : Dashboard JSON
+
+== Real-Time Exercise Analysis ==
+User -> FE       : Start LiveDetection
+FE -> BE         : POST /api/ai/squat (frame + token)
+BE -> ML         : POST /analyze/squat (frame data)
+ML --> ML        : Load model + analyze frame
+ML --> BE        : JSON(results)
+BE --> FE        : JSON(results)
+FE --> User      : Render live feedback
+
+@enduml

@@ -1,0 +1,463 @@
+import { TrainingProgram } from '../models/TrainingProgram';
+import { ProgramEnrollment } from '../models/ProgramEnrollment';
+import { WorkoutCategory, Difficulty, EnrollmentStatus } from '../models/shared/Enums';
+import logger from '../utils/logger';
+import { ProgramWorkout } from '../models/ProgramWorkout';
+import { WorkoutPlan } from '../models/WorkoutPlan';
+
+interface WorkoutScheduleItem {
+  workoutPlanId: number;
+  weekNumber: number;
+  dayOfWeek: string;
+  isRestDay?: boolean;
+  alternateWorkoutPlanId?: number;
+  notes?: string;
+  adjustments?: {
+    intensity?: number;
+    sets?: number;
+    reps?: number;
+    duration?: number;
+  };
+}
+
+// Mock data for training programs
+const mockTrainingPrograms = [
+  {
+    id: 1,
+    name: "6-Week Beginner Strength Foundation",
+    description: "A comprehensive program designed for beginners to build a solid foundation in strength training. This program gradually introduces fundamental movements and progressively increases intensity.",
+    difficulty: Difficulty.BEGINNER,
+    category: WorkoutCategory.STRENGTH,
+    durationWeeks: 6,
+    workoutsPerWeek: 3,
+    estimatedMinutesPerWorkout: 45,
+    imageUrl: "https://example.com/images/beginner-strength.jpg",
+    tags: ["beginner", "strength", "foundation"],
+    isPublished: true,
+    enrollmentCount: 325,
+    completionCount: 178,
+    rating: 4.7,
+    ratingCount: 156,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    metadata: {
+      equipment: ["Dumbbells", "Resistance Bands", "Exercise Mat"],
+      prerequisites: ["No prior experience needed", "Basic mobility"],
+      expectedResults: ["Increased strength in major muscle groups", "Improved form", "Better understanding of basic exercises"],
+      weeklyBreakdown: {
+        1: "Introduction to basic movements and proper form",
+        2: "Focus on building consistency and slight weight progression",
+        3: "Introduction to supersets and compound movements",
+        4: "Increasing intensity and volume",
+        5: "Advanced techniques and progressive overload",
+        6: "Peak week and performance testing"
+      }
+    }
+  },
+  {
+    id: 2,
+    name: "12-Week Hypertrophy Builder",
+    description: "An intermediate-level program focused on muscle hypertrophy through progressive overload, optimal volume, and strategic exercise selection. This program is designed for those with some training experience looking to maximize muscle growth.",
+    difficulty: Difficulty.INTERMEDIATE,
+    category: WorkoutCategory.HYPERTROPHY,
+    durationWeeks: 12,
+    workoutsPerWeek: 5,
+    estimatedMinutesPerWorkout: 60,
+    imageUrl: "https://example.com/images/hypertrophy-builder.jpg",
+    tags: ["intermediate", "hypertrophy", "muscle building", "volume training"],
+    isPublished: true,
+    enrollmentCount: 412,
+    completionCount: 203,
+    rating: 4.8,
+    ratingCount: 187,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    metadata: {
+      equipment: ["Full gym access recommended", "Dumbbells", "Barbells", "Cable machines"],
+      prerequisites: ["6+ months of consistent training", "Familiarity with major compound lifts", "No significant injuries"],
+      expectedResults: ["Significant muscle hypertrophy", "Improved mind-muscle connection", "Enhanced workout capacity"],
+      weeklyBreakdown: {
+        1: "Assessment week and introduction to volume training",
+        2: "Upper body focus with progressive overload principles",
+        3: "Lower body development and time under tension techniques",
+        4: "Push/Pull split with increased volume",
+        5: "Deload week with technique refinement",
+        6: "Intensification phase with drop sets and supersets",
+        7: "Strength-hypertrophy hybrid training",
+        8: "Metabolic stress focus with shorter rest periods",
+        9: "Advanced techniques: rest-pause, mechanical drop sets",
+        10: "Peak volume week with maximum stimulus",
+        11: "Strategic deload and recovery optimization",
+        12: "Final push and performance assessment"
+      }
+    }
+  },
+  {
+    id: 3,
+    name: "8-Week Fat Loss Accelerator",
+    description: "An advanced program designed to maximize fat loss while preserving lean muscle mass. Combines high-intensity interval training, strategic resistance training, and metabolic conditioning for optimal results.",
+    difficulty: Difficulty.ADVANCED,
+    category: WorkoutCategory.CARDIO,
+    durationWeeks: 8,
+    workoutsPerWeek: 6,
+    estimatedMinutesPerWorkout: 50,
+    imageUrl: "https://example.com/images/fat-loss-accelerator.jpg",
+    tags: ["advanced", "fat loss", "HIIT", "conditioning"],
+    isPublished: true,
+    enrollmentCount: 287,
+    completionCount: 134,
+    rating: 4.6,
+    ratingCount: 112,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    metadata: {
+      equipment: ["Full gym access", "Cardio equipment", "Kettlebells", "Medicine balls"],
+      prerequisites: ["Good baseline fitness level", "Experience with high-intensity training", "No cardiovascular issues"],
+      expectedResults: ["Significant fat loss", "Improved cardiovascular fitness", "Enhanced work capacity", "Preserved muscle mass"],
+      weeklyBreakdown: {
+        1: "Assessment and introduction to metabolic conditioning",
+        2: "HIIT focus with strength maintenance",
+        3: "Circuit training and compound movements",
+        4: "Tabata protocols and increased intensity",
+        5: "Peak caloric expenditure week",
+        6: "Strength-cardio hybrid training",
+        7: "Maximum intensity week",
+        8: "Finalization and performance testing"
+      }
+    }
+  }
+];
+
+// Mock workout schedule for programs
+const mockWorkoutSchedules: { [programId: number]: WorkoutScheduleItem[] } = {
+  // Program 1: 6-Week Beginner Strength Foundation
+  1: [
+    // Week 1
+    { workoutPlanId: 1, weekNumber: 1, dayOfWeek: "MONDAY", notes: "Focus on form and technique" },
+    { workoutPlanId: 2, weekNumber: 1, dayOfWeek: "WEDNESDAY", notes: "Light intensity to build foundation" },
+    { workoutPlanId: 3, weekNumber: 1, dayOfWeek: "FRIDAY", notes: "Full body workout with basic movements" },
+    
+    // Week 2
+    { workoutPlanId: 1, weekNumber: 2, dayOfWeek: "MONDAY", notes: "Increase weight slightly if form is good" },
+    { workoutPlanId: 2, weekNumber: 2, dayOfWeek: "WEDNESDAY", notes: "Focus on mind-muscle connection" },
+    { workoutPlanId: 3, weekNumber: 2, dayOfWeek: "FRIDAY", notes: "Try to increase reps or weight from last week" },
+    
+    // Week 3
+    { workoutPlanId: 4, weekNumber: 3, dayOfWeek: "MONDAY", notes: "Introduction to supersets" },
+    { workoutPlanId: 5, weekNumber: 3, dayOfWeek: "WEDNESDAY", notes: "Focus on compound movements" },
+    { workoutPlanId: 6, weekNumber: 3, dayOfWeek: "FRIDAY", notes: "Full body workout with increased intensity" },
+    
+    // Week 4
+    { workoutPlanId: 4, weekNumber: 4, dayOfWeek: "MONDAY", adjustments: { intensity: 110 } },
+    { workoutPlanId: 5, weekNumber: 4, dayOfWeek: "WEDNESDAY", adjustments: { sets: 4, reps: 12 } },
+    { workoutPlanId: 6, weekNumber: 4, dayOfWeek: "FRIDAY", notes: "Push yourself but maintain proper form" },
+    
+    // Week 5
+    { workoutPlanId: 1, weekNumber: 5, dayOfWeek: "MONDAY", adjustments: { intensity: 120 } },
+    { workoutPlanId: 2, weekNumber: 5, dayOfWeek: "WEDNESDAY", adjustments: { intensity: 120 } },
+    { workoutPlanId: 3, weekNumber: 5, dayOfWeek: "FRIDAY", adjustments: { intensity: 120 } },
+    
+    // Week 6
+    { workoutPlanId: 4, weekNumber: 6, dayOfWeek: "MONDAY", notes: "Peak intensity, give it your all" },
+    { workoutPlanId: 5, weekNumber: 6, dayOfWeek: "WEDNESDAY", notes: "Focus on maximum effort" },
+    { workoutPlanId: 6, weekNumber: 6, dayOfWeek: "FRIDAY", notes: "Final workout of the program, max effort!" }
+  ],
+  
+  // Program 2: 12-Week Body Transformation (showing just first 3 weeks for brevity)
+  2: [
+    // Week 1
+    { workoutPlanId: 1, weekNumber: 1, dayOfWeek: "MONDAY", notes: "Upper body focus" },
+    { workoutPlanId: 3, weekNumber: 1, dayOfWeek: "TUESDAY", notes: "Lower body focus" },
+    { workoutPlanId: 2, weekNumber: 1, dayOfWeek: "THURSDAY", notes: "Push exercises" },
+    { workoutPlanId: 4, weekNumber: 1, dayOfWeek: "FRIDAY", notes: "Pull exercises" },
+    
+    // Week 2
+    { workoutPlanId: 5, weekNumber: 2, dayOfWeek: "MONDAY", notes: "Chest and triceps" },
+    { workoutPlanId: 6, weekNumber: 2, dayOfWeek: "TUESDAY", notes: "Back and biceps" },
+    { workoutPlanId: 3, weekNumber: 2, dayOfWeek: "THURSDAY", notes: "Legs and shoulders" },
+    { workoutPlanId: 4, weekNumber: 2, dayOfWeek: "FRIDAY", notes: "Full body conditioning" },
+    
+    // Week 3
+    { workoutPlanId: 1, weekNumber: 3, dayOfWeek: "MONDAY", adjustments: { intensity: 110 } },
+    { workoutPlanId: 3, weekNumber: 3, dayOfWeek: "TUESDAY", adjustments: { intensity: 110 } },
+    { workoutPlanId: 2, weekNumber: 3, dayOfWeek: "THURSDAY", adjustments: { intensity: 110 } },
+    { workoutPlanId: 4, weekNumber: 3, dayOfWeek: "FRIDAY", adjustments: { intensity: 110 } }
+  ],
+  
+  // Program 3: 8-Week Fat Loss Accelerator (showing just first 2 weeks for brevity)
+  3: [
+    // Week 1
+    { workoutPlanId: 1, weekNumber: 1, dayOfWeek: "MONDAY", notes: "Full body HIIT" },
+    { workoutPlanId: 2, weekNumber: 1, dayOfWeek: "TUESDAY", notes: "Upper body focus + cardio" },
+    { workoutPlanId: 3, weekNumber: 1, dayOfWeek: "WEDNESDAY", isRestDay: true, notes: "Active recovery - light walking" },
+    { workoutPlanId: 4, weekNumber: 1, dayOfWeek: "THURSDAY", notes: "Lower body focus + cardio" },
+    { workoutPlanId: 5, weekNumber: 1, dayOfWeek: "FRIDAY", notes: "Circuit training" },
+    
+    // Week 2
+    { workoutPlanId: 6, weekNumber: 2, dayOfWeek: "MONDAY", notes: "High intensity circuit" },
+    { workoutPlanId: 1, weekNumber: 2, dayOfWeek: "TUESDAY", adjustments: { intensity: 110, duration: 60 } },
+    { workoutPlanId: 2, weekNumber: 2, dayOfWeek: "WEDNESDAY", isRestDay: true, notes: "Active recovery - light walking" },
+    { workoutPlanId: 3, weekNumber: 2, dayOfWeek: "THURSDAY", adjustments: { intensity: 110, duration: 60 } },
+    { workoutPlanId: 4, weekNumber: 2, dayOfWeek: "FRIDAY", notes: "Metabolic conditioning" }
+  ]
+};
+
+// Mock enrollments
+const mockEnrollments: ProgramEnrollment[] = [
+  {
+    id: 1,
+    user: { id: 1 } as any,
+    program: { id: 1 } as any,
+    status: EnrollmentStatus.ACTIVE,
+    currentWeek: 3,
+    completedWorkouts: 6,
+    startDate: new Date(new Date().setDate(new Date().getDate() - 14)), // 2 weeks ago
+    completionDate: undefined,
+    userRating: undefined,
+    userFeedback: undefined,
+    progress: {
+      workoutHistory: {
+        "W1D1": { completed: true, completionDate: new Date(new Date().setDate(new Date().getDate() - 14)), rating: 4, difficulty: 3 },
+        "W1D2": { completed: true, completionDate: new Date(new Date().setDate(new Date().getDate() - 12)), rating: 4, difficulty: 3 },
+        "W1D3": { completed: true, completionDate: new Date(new Date().setDate(new Date().getDate() - 10)), rating: 5, difficulty: 4 },
+        "W2D1": { completed: true, completionDate: new Date(new Date().setDate(new Date().getDate() - 7)), rating: 4, difficulty: 4 },
+        "W2D2": { completed: true, completionDate: new Date(new Date().setDate(new Date().getDate() - 5)), rating: 3, difficulty: 5 },
+        "W2D3": { completed: true, completionDate: new Date(new Date().setDate(new Date().getDate() - 3)), rating: 4, difficulty: 4 }
+      },
+      weeklyNotes: {
+        1: "Great first week! Feeling motivated.",
+        2: "Second week was more challenging but I'm seeing progress."
+      }
+    },
+    createdAt: new Date(new Date().setDate(new Date().getDate() - 14)),
+    updatedAt: new Date(new Date().setDate(new Date().getDate() - 3))
+  }
+];
+
+export class TrainingProgramService {
+  async getAllPrograms() {
+    logger.info('Getting all training programs');
+    return mockTrainingPrograms;
+  }
+
+  async getProgramById(id: number) {
+    logger.info(`Getting training program with ID: ${id}`);
+    const program = mockTrainingPrograms.find(p => p.id === id);
+    if (!program) {
+      throw new Error('Training program not found');
+    }
+    return program;
+  }
+
+  async getProgramWorkouts(programId: number) {
+    logger.info(`Getting workouts for program with ID: ${programId}`);
+    const schedule = mockWorkoutSchedules[programId];
+    if (!schedule) {
+      throw new Error('Workout schedule not found for this program');
+    }
+    return schedule;
+  }
+
+  async createProgram(programData: any) {
+    logger.info('Creating new training program', programData);
+    const newId = Math.max(...mockTrainingPrograms.map(p => p.id)) + 1;
+    const newProgram = {
+      ...programData,
+      id: newId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      enrollmentCount: 0,
+      completionCount: 0,
+      rating: 0,
+      ratingCount: 0
+    };
+    mockTrainingPrograms.push(newProgram as any);
+    return newProgram;
+  }
+
+  async updateProgram(id: number, programData: any) {
+    logger.info(`Updating training program with ID: ${id}`, programData);
+    const index = mockTrainingPrograms.findIndex(p => p.id === id);
+    if (index === -1) {
+      throw new Error('Training program not found');
+    }
+    mockTrainingPrograms[index] = {
+      ...mockTrainingPrograms[index],
+      ...programData,
+      id,
+      updatedAt: new Date()
+    } as any;
+    return mockTrainingPrograms[index];
+  }
+
+  async deleteProgram(id: number) {
+    logger.info(`Deleting training program with ID: ${id}`);
+    const index = mockTrainingPrograms.findIndex(p => p.id === id);
+    if (index === -1) {
+      throw new Error('Training program not found');
+    }
+    mockTrainingPrograms.splice(index, 1);
+  }
+
+  async addWorkoutToProgram(programId: number, workoutData: WorkoutScheduleItem) {
+    logger.info(`Adding workout to program with ID: ${programId}`, workoutData);
+    if (!mockWorkoutSchedules[programId]) {
+      mockWorkoutSchedules[programId] = [];
+    }
+    mockWorkoutSchedules[programId].push(workoutData);
+    return workoutData;
+  }
+
+  async updateProgramWorkout(programId: number, weekNumber: number, dayOfWeek: string, workoutData: Partial<WorkoutScheduleItem>) {
+    logger.info(`Updating workout for program ID: ${programId}, week: ${weekNumber}, day: ${dayOfWeek}`, workoutData);
+    if (!mockWorkoutSchedules[programId]) {
+      throw new Error('Program workout schedule not found');
+    }
+    
+    const index = mockWorkoutSchedules[programId].findIndex(
+      workout => workout.weekNumber === weekNumber && workout.dayOfWeek === dayOfWeek
+    );
+    
+    if (index === -1) {
+      throw new Error('Workout not found in the program schedule');
+    }
+    
+    mockWorkoutSchedules[programId][index] = {
+      ...mockWorkoutSchedules[programId][index],
+      ...workoutData
+    };
+    
+    return mockWorkoutSchedules[programId][index];
+  }
+
+  async enrollUserInProgram(userId: number, programId: number) {
+    // In a real implementation, this would save to a database
+    const program = await this.getProgramById(programId);
+    
+    // Create a new enrollment
+    const enrollment = {
+      id: Math.floor(Math.random() * 1000),
+      userId,
+      programId,
+      startDate: new Date(),
+      currentWeek: 1,
+      currentDay: 'MONDAY',
+      status: EnrollmentStatus.ACTIVE,
+      completedWorkouts: 0,
+      totalWorkouts: program.durationWeeks * program.workoutsPerWeek,
+      progress: {
+        percentComplete: 0,
+        workoutHistory: {},
+        assessments: []
+      },
+      completionDate: null as Date | null,
+      userRating: null as number | null,
+      userFeedback: null as string | null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    return enrollment;
+  }
+
+  async getUserEnrollments(userId: number) {
+    logger.info(`Getting enrollments for user ${userId}`);
+    return mockEnrollments.filter(e => (e.user as any).id === userId);
+  }
+
+  async updateEnrollmentProgress(enrollmentId: number, progressData: any) {
+    logger.info(`Updating enrollment progress for enrollment ${enrollmentId}`, progressData);
+    const index = mockEnrollments.findIndex(e => e.id === enrollmentId);
+    if (index === -1) {
+      throw new Error('Enrollment not found');
+    }
+    
+    mockEnrollments[index] = {
+      ...mockEnrollments[index],
+      ...progressData,
+      updatedAt: new Date()
+    };
+    
+    return mockEnrollments[index];
+  }
+
+  async completeWorkout(enrollmentId: number, week: number, day: string, completionData: any) {
+    logger.info(`Marking workout as completed for enrollment ${enrollmentId}, week ${week}, day ${day}`, completionData);
+    const index = mockEnrollments.findIndex(e => e.id === enrollmentId);
+    if (index === -1) {
+      throw new Error('Enrollment not found');
+    }
+    
+    const workoutKey = `W${week}D${day}`;
+    const enrollment = mockEnrollments[index];
+    
+    if (!enrollment.progress.workoutHistory) {
+      enrollment.progress.workoutHistory = {};
+    }
+    
+    enrollment.progress.workoutHistory[workoutKey] = {
+      completed: true,
+      completionDate: new Date(),
+      ...completionData
+    };
+    
+    enrollment.completedWorkouts += 1;
+    enrollment.updatedAt = new Date();
+    
+    // Check if all workouts for the week are completed to auto-advance
+    const programId = (enrollment.program as any).id;
+    const workoutsInWeek = mockWorkoutSchedules[programId]?.filter(w => w.weekNumber === week) || [];
+    
+    const workoutsCompletedInWeek = Object.keys(enrollment.progress.workoutHistory)
+      .filter(key => key.startsWith(`W${week}`) && enrollment.progress.workoutHistory[key].completed)
+      .length;
+    
+    if (workoutsCompletedInWeek >= workoutsInWeek.length && enrollment.currentWeek === week) {
+      enrollment.currentWeek += 1;
+      
+      // Check if program is completed
+      const program = mockTrainingPrograms.find(p => p.id === programId);
+      if (program && enrollment.currentWeek > program.durationWeeks) {
+        enrollment.status = EnrollmentStatus.COMPLETED;
+        enrollment.completionDate = new Date();
+        
+        // Update program completion stats
+        const programIndex = mockTrainingPrograms.findIndex(p => p.id === programId);
+        if (programIndex !== -1) {
+          mockTrainingPrograms[programIndex].completionCount += 1;
+        }
+      }
+    }
+    
+    return enrollment;
+  }
+
+  async rateProgram(enrollmentId: number, rating: number, feedback?: string) {
+    logger.info(`Rating program for enrollment ${enrollmentId}: ${rating}/5`);
+    const index = mockEnrollments.findIndex(e => e.id === enrollmentId);
+    if (index === -1) {
+      throw new Error('Enrollment not found');
+    }
+    
+    const enrollment = mockEnrollments[index];
+    enrollment.userRating = rating;
+    
+    if (feedback) {
+      enrollment.userFeedback = feedback;
+    }
+    
+    enrollment.updatedAt = new Date();
+    
+    // Update program rating
+    const programId = (enrollment.program as any).id;
+    const programIndex = mockTrainingPrograms.findIndex(p => p.id === programId);
+    if (programIndex !== -1) {
+      const program = mockTrainingPrograms[programIndex];
+      const totalRatingPoints = program.rating * program.ratingCount + rating;
+      program.ratingCount += 1;
+      program.rating = totalRatingPoints / program.ratingCount;
+    }
+    
+    return enrollment;
+  }
+} 

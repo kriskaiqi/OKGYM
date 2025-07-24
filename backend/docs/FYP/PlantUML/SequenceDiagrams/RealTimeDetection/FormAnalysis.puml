@@ -1,0 +1,67 @@
+@startuml FormAnalysis
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Form Analysis Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Camera System" as CS
+participant "AI Model" as AI
+participant "Database" as DB
+
+== Real-time Tracking ==
+
+CS -> FE: Stream Video Feed
+FE -> AI: Send Frame Data
+AI -> AI: Process Pose
+AI -> FE: Return Keypoints
+FE -> User: Display Skeleton Overlay
+
+== Angle Measurement ==
+
+AI -> AI: Calculate Joint Angles
+AI -> FE: Send Angle Data
+FE -> User: Display Angle Metrics
+
+== Form Analysis ==
+
+AI -> AI: Compare with Reference
+AI -> BE: Send Analysis Results
+BE -> DB: Store Form Data
+BE -> FE: Send Feedback
+FE -> User: Display Form Score
+
+== Feedback Generation ==
+
+alt Form Correct
+    BE -> FE: Send Positive Feedback
+    FE -> User: Display Success Message
+else Form Incorrect
+    BE -> FE: Send Correction Tips
+    FE -> User: Display Improvement Suggestions
+end
+
+note right of User
+  Analysis Features:
+  - Real-time Tracking
+  - Angle Measurement
+  - Form Analysis
+  - Instant Feedback
+end note
+
+@enduml 

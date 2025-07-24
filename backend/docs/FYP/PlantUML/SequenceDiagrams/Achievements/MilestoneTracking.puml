@@ -1,0 +1,93 @@
+@startuml MilestoneTracking
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Milestone Tracking Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Milestone Overview ==
+
+User -> FE: Access Milestones
+FE -> BE: Request Milestone Status
+BE -> DB: Fetch Milestones
+DB -> BE: Return Milestone Data
+BE -> FE: Send Milestone List
+FE -> User: Display Milestones
+
+== Progress Tracking ==
+
+BE -> BE: Monitor User Progress
+BE -> DB: Check Milestone Criteria
+DB -> BE: Return Progress Data
+BE -> BE: Evaluate Progress
+alt Milestone Achieved
+    BE -> DB: Mark Milestone Complete
+    DB -> BE: Update Status
+    BE -> FE: Send Achievement Notification
+    FE -> User: Display Milestone Reached
+else Progress Updated
+    BE -> FE: Send Progress Update
+    FE -> User: Display Progress
+end
+
+== Milestone Details ==
+
+User -> FE: View Milestone Details
+FE -> BE: Request Details
+BE -> DB: Fetch Milestone Info
+DB -> BE: Return Details
+BE -> FE: Send Milestone Data
+FE -> User: Display Detailed View
+
+== Milestone Rewards ==
+
+alt New Milestone
+    BE -> BE: Process Rewards
+    BE -> DB: Update User Rewards
+    DB -> BE: Rewards Updated
+    BE -> FE: Send Reward Notification
+    FE -> User: Display Rewards Earned
+end
+
+== Milestone History ==
+
+User -> FE: View Milestone History
+FE -> BE: Request History
+BE -> DB: Fetch History
+DB -> BE: Return History
+BE -> FE: Send History Data
+FE -> User: Display Milestone Timeline
+
+== Next Milestone ==
+
+BE -> BE: Calculate Next Milestone
+BE -> FE: Send Next Goal
+FE -> User: Display Next Target
+
+note right of User
+  Milestone Features:
+  - Progress Tracking
+  - Achievement Recognition
+  - Reward Distribution
+  - History Viewing
+  - Next Goal Display
+end note
+
+@enduml 

@@ -1,0 +1,98 @@
+@startuml WeightTracking
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Weight Tracking Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Weight Tracking;
+
+|System|
+:Display Weight History;
+
+fork
+  |User|
+  :Add New Weight Entry;
+  
+  |System|
+  :Display Entry Form;
+  
+  |User|
+  :Enter Weight Data:
+  - Current Weight
+  - Date and Time
+  - Notes (Optional)
+  - Body Measurements (Optional);
+  
+  |System|
+  :Validate Weight Entry;
+  
+  if (Entry Valid?) then (yes)
+    :Save Weight Entry;
+    :Update Weight History;
+  else (no)
+    :Display Error Message;
+    :Request Correction;
+  endif
+fork again
+  |User|
+  :View Weight Trends;
+  
+  |System|
+  :Display Analysis:
+  - Weight Chart
+  - Trend Line
+  - Moving Average
+  - Goal Progress;
+  
+  :Show Statistics:
+  - Total Change
+  - Rate of Change
+  - Weekly Average
+  - Monthly Average;
+end fork
+
+|System|
+:Update Progress Dashboard;
+
+if (Weight Goal Set?) then (yes)
+  :Calculate Progress:
+  - Current vs Target
+  - Time Remaining
+  - Projected Completion;
+  
+  :Update Goal Status;
+else (no)
+  :Continue Tracking;
+endif
+
+note right
+  Weight Tracking Features:
+  - Historical Data
+  - Trend Analysis
+  - Goal Integration
+  - Progress Visualization
+  - Statistical Analysis
+end note
+
+@enduml 

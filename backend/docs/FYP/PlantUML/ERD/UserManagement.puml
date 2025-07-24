@@ -1,0 +1,106 @@
+@startuml User_Management_ERD
+
+' Page settings
+skinparam pageMargin 10
+skinparam pageExternalColor white
+skinparam pageBorderColor white
+skinparam page {
+    width 800
+    height 1200
+}
+
+' Styling
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Core>> #B4D6FF
+    BackgroundColor<<Junction>> #B4FFB4
+    BackgroundColor<<Tracking>> #FFD6B4
+    BorderColor #666666
+    ArrowColor #666666
+    FontSize 11
+    AttributeFontSize 10
+}
+
+' Core Entity
+package "Core Entity" {
+    class users << Core >> {
+        ○ PK id: int
+        --
+        email: varchar(255)
+        password_hash: varchar(255)
+        userRole: enum['user', 'admin']
+        firstName: varchar(100)
+        lastName: varchar(100)
+        gender: enum['male', 'female', 'other']
+        stats: jsonb
+        preferences: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+        lastLoginAt: timestamp
+    }
+}
+
+' Tracking Tables
+package "Progress Tracking" {
+    class body_metrics << Tracking >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        weight: decimal
+        height: decimal
+        bmi: decimal
+        bodyFat: decimal
+        muscleMass: decimal
+        measurementDate: timestamp
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class fitness_goals << Tracking >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        goalType: varchar(50)
+        targetValue: decimal
+        startDate: timestamp
+        endDate: timestamp
+        status: varchar(20)
+        progress: decimal
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class achievement << Tracking >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        name: varchar(100)
+        description: text
+        criteria: jsonb
+        progress: decimal
+        achievedAt: timestamp
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Junction Tables
+package "User Relationships" {
+    class user_favourite_workouts << Junction >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        FK workout_id: uuid
+        createdAt: timestamp
+    }
+}
+
+' Relationships with specific cardinality constraints
+users "1" *-- "1..*" body_metrics : "tracks (requires initial metrics)" >
+users "1" *-- "0..5" fitness_goals : "sets (max 5 active goals)" >
+users "1" *-- "0..*" achievement : "earns (unlimited)" >
+users "1" o-- "0..10" user_favourite_workouts : "favorites (max 10 workouts)" >
+
+@enduml 

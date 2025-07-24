@@ -1,0 +1,79 @@
+@startuml StartWorkoutSession
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Start Workout Session Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Select Workout Plan;
+
+|System|
+:Check for Incomplete Sessions;
+
+if (Incomplete Session Exists?) then (yes)
+  :Display Resume Prompt;
+  
+  |User|
+  :Choose to Resume or Start New;
+  
+  if (Resume?) then (yes)
+    :Load Previous Session;
+    :Display Last Exercise;
+    :Restore Progress;
+  else (no)
+    :Create New Session;
+  endif
+else (no)
+  :Create New Session;
+endif
+
+|System|
+:Initialize Workout Session:
+- Start Timer
+- Load First Exercise
+- Prepare Tracking;
+
+if (Exercise Supports Detection?) then (yes)
+  :Activate Real-time Detection;
+  :Display Detection Interface;
+else (no)
+  :Display Standard Exercise Interface;
+endif
+
+|User|
+:Begin First Exercise;
+
+|System|
+:Start Recording Performance;
+
+stop
+
+note right
+  Session Initialization:
+  - Timer Setup
+  - Exercise Loading
+  - Progress Tracking
+  - Detection Setup (if supported)
+end note
+
+@enduml 

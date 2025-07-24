@@ -1,0 +1,18 @@
+@startuml
+left to right direction
+
+actor "🧑 User" as User
+component "💻 Frontend" as FE
+component "🖥️ Backend\n(Node.js/Express)" as BE
+component "🐍 Python ML Service\n(Flask/FastAPI)" as ML
+database "🗄️ Postgres DB\n(TypeORM)" as DB
+
+User --> FE : Login / Load Dashboard\nor LiveDetection
+FE --> BE : HTTP Request (REST API)
+BE --> DB : SELECT / INSERT / UPDATE
+DB --> BE : Query Result
+BE --> ML : ML Analysis Request (frame data)
+ML --> BE : ML Analysis Response (JSON)
+BE --> FE : HTTP Response (JSON)
+FE --> User : Render UI / Feedback
+@enduml 

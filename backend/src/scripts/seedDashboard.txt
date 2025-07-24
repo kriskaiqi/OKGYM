@@ -1,0 +1,184 @@
+import { AppDataSource } from '../config/database';
+import { User } from '../models/User';
+import { Workout } from '../models/Workout';
+import { WorkoutSession } from '../models/WorkoutSession';
+import { Achievement } from '../models/Achievement';
+import { FitnessGoal } from '../models/FitnessGoal';
+import { BodyMetric } from '../models/BodyMetric';
+import { Notification } from '../models/Notification';
+import { WorkoutPlan } from '../models/WorkoutPlan';
+import { hash } from 'bcryptjs';
+
+async function seedDashboard() {
+  try {
+    await AppDataSource.initialize();
+    console.log('Connected to database');
+
+    // Create test user
+    const userRepository = AppDataSource.getRepository(User);
+    const hashedPassword = await hash('test123', 10);
+    const testUser = await userRepository.save({
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@example.com',
+      password: hashedPassword,
+      isAdmin: false
+    });
+
+    // Create sample workouts
+    const workoutRepository = AppDataSource.getRepository(Workout);
+    const workouts = await workoutRepository.save([
+      {
+        name: 'Full Body Workout',
+        description: 'A complete full body workout for beginners',
+        duration: 45,
+        difficulty: 'beginner',
+        popularity: 100,
+        exercises: [
+          { id: '1', name: 'Push-ups', sets: 3, reps: 10, restTime: 60 },
+          { id: '2', name: 'Squats', sets: 3, reps: 12, restTime: 60 }
+        ],
+        targetMuscles: ['chest', 'legs', 'shoulders'],
+        equipment: ['none'],
+        tags: ['beginner', 'full-body']
+      },
+      {
+        name: 'Advanced HIIT',
+        description: 'High-intensity interval training for advanced users',
+        duration: 30,
+        difficulty: 'advanced',
+        popularity: 85,
+        exercises: [
+          { id: '3', name: 'Burpees', sets: 4, reps: 15, restTime: 45 },
+          { id: '4', name: 'Mountain Climbers', sets: 4, reps: 20, restTime: 45 }
+        ],
+        targetMuscles: ['full-body'],
+        equipment: ['none'],
+        tags: ['advanced', 'hiit']
+      }
+    ]);
+
+    // Create workout plan
+    const workoutPlanRepository = AppDataSource.getRepository(WorkoutPlan);
+    const workoutPlan = await workoutPlanRepository.save({
+      name: 'Beginner Plan',
+      description: 'A beginner-friendly workout plan',
+      exercises: [
+        { exerciseId: '1', sets: 3, reps: 10 },
+        { exerciseId: '2', sets: 3, reps: 12 }
+      ]
+    });
+
+    // Create workout sessions
+    const sessionRepository = AppDataSource.getRepository(WorkoutSession);
+    const sessions = await sessionRepository.save([
+      {
+        user: testUser,
+        workoutPlan,
+        status: 'COMPLETED',
+        startTime: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() - 23 * 60 * 60 * 1000),
+        totalDuration: 3600,
+        caloriesBurned: 300,
+        summary: {
+          totalExercises: 2,
+          uniqueExercises: 2,
+          totalDuration: 3600,
+          caloriesBurned: 300,
+          exerciseSummaries: [
+            {
+              exerciseId: '1',
+              name: 'Push-ups',
+              totalAttempts: 3,
+              bestResult: { repetitions: 10, duration: 60, formScore: 0.9 }
+            }
+          ]
+        }
+      },
+      {
+        user: testUser,
+        workoutPlan,
+        status: 'scheduled',
+        startTime: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      }
+    ]);
+
+    // Create achievements
+    const achievementRepository = AppDataSource.getRepository(Achievement);
+    await achievementRepository.save([
+      {
+        user: testUser,
+        title: 'First Workout',
+        description: 'Complete your first workout',
+        icon: '🎯',
+        progress: 1,
+        total: 1,
+        earned: true
+      },
+      {
+        user: testUser,
+        title: 'Workout Streak',
+        description: 'Complete workouts for 7 days in a row',
+        icon: '🔥',
+        progress: 1,
+        total: 7,
+        earned: false
+      }
+    ]);
+
+    // Create fitness goals
+    const goalRepository = AppDataSource.getRepository(FitnessGoal);
+    await goalRepository.save([
+      {
+        user: testUser,
+        title: 'Weight Goal',
+        target: 75,
+        current: 80,
+        unit: 'kg',
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        progress: 50
+      }
+    ]);
+
+    // Create body metrics
+    const metricRepository = AppDataSource.getRepository(BodyMetric);
+    await metricRepository.save([
+      {
+        user: testUser,
+        weight: 80,
+        bodyFat: 20,
+        muscleMass: 35,
+        date: new Date()
+      }
+    ]);
+
+    // Create notifications
+    const notificationRepository = AppDataSource.getRepository(Notification);
+    await notificationRepository.save([
+      {
+        user: testUser,
+        type: 'achievement',
+        title: 'Achievement Unlocked!',
+        message: 'Congratulations! You completed your first workout.',
+        read: false,
+        timestamp: new Date()
+      },
+      {
+        user: testUser,
+        type: 'reminder',
+        title: 'Workout Reminder',
+        message: 'You have a workout scheduled for tomorrow.',
+        read: true,
+        timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000)
+      }
+    ]);
+
+    console.log('Dashboard data seeded successfully');
+  } catch (error) {
+    console.error('Error seeding dashboard data:', error);
+  } finally {
+    await AppDataSource.destroy();
+  }
+}
+
+seedDashboard(); 

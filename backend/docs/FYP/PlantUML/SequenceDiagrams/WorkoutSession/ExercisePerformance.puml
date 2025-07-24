@@ -1,0 +1,80 @@
+@startuml ExercisePerformance
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Exercise Performance Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "Camera System" as CS
+participant "AI Detection" as AI
+
+== Set/Rep Recording ==
+
+User -> FE: Start Exercise
+FE -> BE: Initialize Exercise
+BE -> DB: Create Exercise Record
+DB -> BE: Record Created
+
+loop Each Repetition
+    User -> CS: Perform Exercise
+    CS -> AI: Send Frame
+    AI -> AI: Analyze Form
+    AI -> FE: Update Rep Count
+    FE -> User: Display Rep Count
+end
+
+== Form Tracking ==
+
+loop Continuous
+    CS -> AI: Stream Video
+    AI -> AI: Process Frame
+    AI -> FE: Send Form Analysis
+    FE -> User: Display Form Feedback
+end
+
+== Rest Timer ==
+
+User -> FE: Complete Set
+FE -> BE: Record Set Data
+BE -> DB: Save Set Info
+DB -> BE: Data Saved
+FE -> User: Start Rest Timer
+
+loop Timer Active
+    FE -> User: Update Timer Display
+end
+
+== Progress Update ==
+
+FE -> BE: Update Exercise Progress
+BE -> DB: Save Progress Data
+DB -> BE: Progress Saved
+BE -> FE: Send Updated Stats
+FE -> User: Display Progress
+
+note right of User
+  Performance Features:
+  - Repetition Counting
+  - Form Analysis
+  - Real-time Feedback
+  - Rest Timer
+  - Progress Tracking
+end note
+
+@enduml 

@@ -1,0 +1,78 @@
+@startuml ReportGeneration
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Report Generation Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Report Request ==
+
+User -> FE: Access Reports
+FE -> BE: Request Report Options
+BE -> FE: Send Report Types
+FE -> User: Display Report Menu
+
+User -> FE: Select Report Type
+FE -> BE: Submit Report Request
+BE -> DB: Fetch Required Data
+DB -> BE: Return Data
+BE -> BE: Process Data
+
+== Report Generation ==
+
+BE -> BE: Generate Report Content
+BE -> BE: Format Report
+BE -> FE: Send Report Data
+FE -> User: Display Report
+
+== Report Customization ==
+
+User -> FE: Customize Report
+FE -> BE: Submit Customization
+BE -> BE: Apply Customization
+BE -> FE: Send Updated Report
+FE -> User: Display Customized Report
+
+== Report Export ==
+
+User -> FE: Request Export
+FE -> BE: Generate Export
+BE -> BE: Format Export
+BE -> FE: Send Export File
+FE -> User: Download Report
+
+== Report History ==
+
+User -> FE: View Report History
+FE -> BE: Request History
+BE -> DB: Fetch Reports
+DB -> BE: Return Reports
+BE -> FE: Send History
+FE -> User: Display Report List
+
+note right of User
+  Report Features:
+  - Report Generation
+  - Customization Options
+  - Export Capabilities
+  - History Tracking
+end note
+
+@enduml 

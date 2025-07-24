@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const AuthController_1 = require("../controllers/AuthController");
+const validation_1 = require("../middleware/validation");
+const auth_dto_1 = require("../dto/auth.dto");
+const auth_1 = require("../middleware/auth");
+const Enums_1 = require("../models/shared/Enums");
+const authService_1 = require("../services/authService");
+const repositories_1 = require("../repositories");
+const CacheManager_1 = require("../services/CacheManager");
+const MetricsService_1 = require("../services/MetricsService");
+const router = (0, express_1.Router)();
+const userRepository = repositories_1.repositories.user;
+const metricsService = new MetricsService_1.MetricsService();
+const authService = new authService_1.AuthService(userRepository, CacheManager_1.cacheManager, metricsService);
+const authController = new AuthController_1.AuthController(authService);
+router.post('/register', (0, validation_1.validateRequest)(auth_dto_1.RegisterDto), (req, res) => authController.register(req, res));
+router.post('/login', (0, validation_1.validateRequest)(auth_dto_1.LoginDto), (req, res) => authController.login(req, res));
+router.post('/users/:userId/fitness-profile', auth_1.authenticate, (req, res) => authController.updateFitnessProfile(req, res));
+router.get('/profile/:id', auth_1.authenticate, (req, res) => authController.getUserProfile(req, res));
+router.get('/users', auth_1.authenticate, (0, auth_1.authorize)([Enums_1.UserRole.ADMIN]), (req, res) => authController.getAllUsers(req, res));
+exports.default = router;
+//# sourceMappingURL=authRoutes.js.map

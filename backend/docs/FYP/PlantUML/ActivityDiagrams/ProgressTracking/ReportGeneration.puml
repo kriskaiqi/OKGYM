@@ -1,0 +1,71 @@
+@startuml ReportGeneration
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Report Generation Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Reports;
+
+|System|
+:Display Report Options;
+
+|User|
+:Select Report Type:
+- Progress Summary
+- Exercise Performance
+- Goal Achievement
+- Weight Tracking;
+
+|System|
+:Display Date Range Options;
+
+|User|
+:Select Time Period;
+
+|System|
+:Generate Report;
+
+:Display Report:
+- Summary Statistics
+- Progress Charts
+- Achievement Highlights
+- Recommendations;
+
+|User|
+:View Report Details;
+
+|System|
+:Save Report;
+
+stop
+
+note right
+  Report Features:
+  - Multiple Report Types
+  - Customizable Time Periods
+  - Visual Data Presentation
+  - Progress Insights
+end note
+
+@enduml 

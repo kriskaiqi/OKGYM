@@ -1,0 +1,89 @@
+@startuml BrowseEquipment
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Browse Equipment Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Equipment Section;
+
+|System|
+:Retrieve Equipment Database;
+
+if (Equipment Available?) then (yes)
+  :Display Equipment Categories:
+  - Cardio Equipment
+  - Strength Equipment
+  - Flexibility Equipment
+  - Accessories;
+  
+  |User|
+  :Browse Equipment Categories;
+  
+  fork
+    |User|
+    :Scroll Through Equipment;
+    
+    |System|
+    :Load More Equipment on Scroll;
+  fork again
+    |User|
+    :Hover Over Equipment Items;
+    
+    |System|
+    :Display Equipment Preview:
+    - Image
+    - Name
+    - Category
+    - Brief Description;
+  fork again
+    |User|
+    :Select Equipment Category;
+    
+    |System|
+    :Display Category-Specific Equipment;
+  end fork
+  
+  |User|
+  :Select Equipment to View Details;
+  
+  |System|
+  :Navigate to Equipment Details;
+  
+  stop
+else (no)
+  :Display "No Equipment Available" Message;
+  :Suggest Contacting Support;
+  
+  stop
+endif
+
+note right
+  Browsing Features:
+  - Category Navigation
+  - Infinite Scroll
+  - Hover Previews
+  - Quick Category Filtering
+end note
+
+@enduml 

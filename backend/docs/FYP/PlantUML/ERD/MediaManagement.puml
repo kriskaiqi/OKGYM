@@ -1,0 +1,104 @@
+@startuml Media_Management_ERD
+
+' Page settings
+skinparam pageMargin 10
+skinparam pageExternalColor white
+skinparam pageBorderColor white
+skinparam page {
+    width 900
+    height 1400
+}
+
+' Styling
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Core>> #B4D6FF
+    BackgroundColor<<Junction>> #B4FFB4
+    BackgroundColor<<Media>> #FFD6FF
+    BorderColor #666666
+    ArrowColor #666666
+    FontSize 11
+    AttributeFontSize 10
+}
+
+' Core Entities
+package "Core Entities" {
+    class media << Media >> {
+        ○ PK id: uuid
+        --
+        type: enum['image','video','audio','manual']
+        url: varchar(255)
+        filename: varchar(255)
+        mimeType: varchar(50)
+        size: bigint
+        duration: interval
+        metadata: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class audio_cues << Core >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        name: varchar(100)
+        description: text
+        timing: interval
+        file_url: varchar(255)
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Junction Tables
+package "Media Relationships" {
+    class exercise_media << Junction >> {
+        ○ PK id: uuid
+        --
+        FK exercise_id: uuid
+        FK media_id: uuid
+        sequence: int
+        isPrimary: boolean
+        createdAt: timestamp
+    }
+
+    class equipment_media << Junction >> {
+        ○ PK id: uuid
+        --
+        FK equipment_id: uuid
+        FK media_id: uuid
+        isPrimary: boolean
+        createdAt: timestamp
+    }
+
+    class workout_media << Junction >> {
+        ○ PK id: uuid
+        --
+        FK workout_id: uuid
+        FK media_id: uuid
+        isPrimary: boolean
+        createdAt: timestamp
+    }
+}
+
+' Relationships with specific cardinality constraints
+media "1" o-- "0..*" exercise_media : "used for exercises" >
+media "1" o-- "0..*" equipment_media : "used for equipment" >
+media "1" o-- "0..*" workout_media : "used for workouts" >
+media "1" o-- "0..*" audio_cues : "provides audio" >
+
+exercise_media "1" o-- "0..*" audio_cues : "linked cues" >
+
+audio_cues "1" o-- "0..*" exercise_media : "referenced by" >
+
+equipment_media "1" o-- "0..*" audio_cues : "equipment cues" >
+workout_media "1" o-- "0..*" audio_cues : "workout cues" >
+
+' Layout hints
+media -[hidden]d- exercise_media
+media -[hidden]d- equipment_media
+media -[hidden]d- workout_media
+
+@enduml 

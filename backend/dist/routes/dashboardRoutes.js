@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const validateRequest_1 = require("../middleware/validateRequest");
+const dashboardController_1 = require("../controllers/dashboardController");
+const dashboard_dto_1 = require("../dto/dashboard.dto");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/', dashboardController_1.getDashboardData);
+router.get('/recent-workouts', (0, validateRequest_1.validateRequest)(dashboard_dto_1.GetRecentWorkoutsDto), dashboardController_1.getRecentWorkouts);
+router.get('/recommended-workouts', (0, validateRequest_1.validateRequest)(dashboard_dto_1.GetRecommendedWorkoutsDto), dashboardController_1.getRecommendedWorkouts);
+router.get('/scheduled-workouts', (0, validateRequest_1.validateRequest)(dashboard_dto_1.GetScheduledWorkoutsDto), dashboardController_1.getScheduledWorkouts);
+router.get('/achievements', dashboardController_1.getAchievements);
+router.get('/fitness-goals', dashboardController_1.getFitnessGoals);
+router.get('/body-metrics', dashboardController_1.getBodyMetrics);
+router.get('/weekly-activity', dashboardController_1.getWeeklyActivity);
+router.get('/notifications', dashboardController_1.getNotifications);
+router.get('/workout-stats', (0, validateRequest_1.validateRequest)(dashboard_dto_1.GetWorkoutStatsDto), dashboardController_1.getWorkoutStats);
+exports.default = router;
+//# sourceMappingURL=dashboardRoutes.js.map

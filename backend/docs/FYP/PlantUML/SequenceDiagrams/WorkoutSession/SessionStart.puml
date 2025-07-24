@@ -1,0 +1,71 @@
+@startuml SessionStart
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Workout Session Start Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+participant "Camera System" as CS
+
+== Workout Selection ==
+
+User -> FE: Select Workout
+FE -> BE: Request Workout Data
+BE -> DB: Fetch Workout Details
+DB -> BE: Return Workout Info
+BE -> FE: Send Workout Data
+FE -> User: Display Workout Overview
+
+== Initial Setup ==
+
+User -> FE: Start Workout
+FE -> BE: Initialize Session
+BE -> DB: Create Session Record
+DB -> BE: Session Created
+BE -> FE: Session Ready
+
+== Camera Setup ==
+
+FE -> CS: Request Camera Access
+CS -> FE: Camera Status
+alt Camera Available
+    FE -> CS: Initialize Camera
+    CS -> FE: Camera Ready
+    FE -> User: Display Camera Feed
+else Camera Unavailable
+    FE -> User: Display Error Message
+end
+
+== Preparation ==
+
+FE -> BE: Load Exercise List
+BE -> DB: Fetch Exercise Data
+DB -> BE: Return Exercise Info
+BE -> FE: Send Exercise Details
+FE -> User: Display First Exercise
+
+note right of User
+  Session Start Features:
+  - Workout Selection
+  - Session Initialization
+  - Camera Setup
+  - Exercise Preparation
+end note
+
+@enduml 

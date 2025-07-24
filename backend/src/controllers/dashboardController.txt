@@ -1,0 +1,204 @@
+import { Request, Response } from 'express';
+import { AppDataSource } from '../config/database';
+import { WorkoutSession } from '../models/WorkoutSession';
+import { Achievement } from '../models/Achievement';
+import { FitnessGoal } from '../models/FitnessGoal';
+import { BodyMetric } from '../models/BodyMetric';
+import { Notification } from '../models/Notification';
+import { Between } from 'typeorm';
+
+export const getRecentWorkouts = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+    const limit = parseInt(req.query.limit as string) || 5;
+
+    const workouts = await AppDataSource
+      .getRepository(WorkoutSession)
+      .find({
+        where: { userId },
+        order: { startTime: 'DESC' },
+        take: limit,
+        relations: ['summary']
+      });
+
+    res.json(workouts);
+  } catch (error) {
+    console.error('Error fetching recent workouts:', error);
+    res.status(500).json({ message: 'Error fetching recent workouts' });
+  }
+};
+
+export const getRecommendedWorkouts = async (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 4;
+
+    const workouts = await AppDataSource
+      .getRepository(WorkoutSession)
+      .find({
+        order: { popularity: 'DESC' },
+        take: limit
+      });
+
+    res.json(workouts);
+  } catch (error) {
+    console.error('Error fetching recommended workouts:', error);
+    res.status(500).json({ message: 'Error fetching recommended workouts' });
+  }
+};
+
+export const getScheduledWorkouts = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+    const limit = parseInt(req.query.limit as string) || 3;
+
+    const workouts = await AppDataSource
+      .getRepository(WorkoutSession)
+      .find({
+        where: { 
+          userId,
+          status: 'scheduled',
+          startTime: Between(new Date(), new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) // Next 7 days
+        },
+        order: { startTime: 'ASC' },
+        take: limit
+      });
+
+    res.json(workouts);
+  } catch (error) {
+    console.error('Error fetching scheduled workouts:', error);
+    res.status(500).json({ message: 'Error fetching scheduled workouts' });
+  }
+};
+
+export const getAchievements = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+
+    const achievements = await AppDataSource
+      .getRepository(Achievement)
+      .find({
+        where: { userId },
+        order: { earned: 'DESC', progress: 'DESC' }
+      });
+
+    res.json(achievements);
+  } catch (error) {
+    console.error('Error fetching achievements:', error);
+    res.status(500).json({ message: 'Error fetching achievements' });
+  }
+};
+
+export const getFitnessGoals = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+
+    const goals = await AppDataSource
+      .getRepository(FitnessGoal)
+      .find({
+        where: { userId },
+        order: { deadline: 'ASC' }
+      });
+
+    res.json(goals);
+  } catch (error) {
+    console.error('Error fetching fitness goals:', error);
+    res.status(500).json({ message: 'Error fetching fitness goals' });
+  }
+};
+
+export const getBodyMetrics = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+
+    const metrics = await AppDataSource
+      .getRepository(BodyMetric)
+      .find({
+        where: { userId },
+        order: { date: 'DESC' }
+      });
+
+    res.json(metrics);
+  } catch (error) {
+    console.error('Error fetching body metrics:', error);
+    res.status(500).json({ message: 'Error fetching body metrics' });
+  }
+};
+
+export const getWeeklyActivity = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+    const today = new Date();
+    const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+
+    const workouts = await AppDataSource
+      .getRepository(WorkoutSession)
+      .find({
+        where: {
+          userId,
+          status: 'completed',
+          startTime: Between(weekStart, new Date())
+        }
+      });
+
+    // Create array of 7 days with workout counts
+    const activity = Array(7).fill(0);
+    workouts.forEach(workout => {
+      const dayIndex = new Date(workout.startTime).getDay();
+      activity[dayIndex]++;
+    });
+
+    res.json(activity);
+  } catch (error) {
+    console.error('Error fetching weekly activity:', error);
+    res.status(500).json({ message: 'Error fetching weekly activity' });
+  }
+};
+
+export const getNotifications = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+
+    const notifications = await AppDataSource
+      .getRepository(Notification)
+      .find({
+        where: { userId },
+        order: { timestamp: 'DESC' }
+      });
+
+    res.json(notifications);
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ message: 'Error fetching notifications' });
+  }
+};
+
+export const getWorkoutStats = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+    const days = parseInt(req.query.days as string) || 7;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    const workouts = await AppDataSource
+      .getRepository(WorkoutSession)
+      .find({
+        where: {
+          userId,
+          status: 'completed',
+          startTime: Between(startDate, new Date())
+        },
+        order: { startTime: 'ASC' }
+      });
+
+    const stats = workouts.map(workout => ({
+      date: workout.startTime.toISOString(),
+      duration: workout.summary?.totalDuration || 0,
+      caloriesBurned: workout.summary?.caloriesBurned || 0
+    }));
+
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching workout stats:', error);
+    res.status(500).json({ message: 'Error fetching workout stats' });
+  }
+}; 

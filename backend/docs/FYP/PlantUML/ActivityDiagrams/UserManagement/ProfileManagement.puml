@@ -1,0 +1,75 @@
+@startuml ProfileManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Profile Management Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Profile Page;
+
+|System|
+:Display Current Profile Information;
+
+|User|
+:Select Edit Profile Option;
+
+|System|
+:Display Profile Edit Form with Current Values;
+
+|User|
+:Modify Profile Information:
+- Personal Details
+- Fitness Goals
+- Body Metrics;
+
+|System|
+:Validate Modified Information;
+
+if (Data Valid?) then (yes)
+  :Update Profile Information;
+  :Save Changes;
+  :Display Success Message;
+  
+  |User|
+  :View Updated Profile;
+  
+  stop
+else (no)
+  :Display Validation Errors:
+  - Required Fields Missing
+  - Invalid Data Format;
+  :Return to Edit Form;
+endif
+
+|User|
+:Correct Errors and Resubmit;
+
+note right
+  Profile Information:
+  - Personal Details (name, DOB, etc.)
+  - Fitness Goals
+  - Body Metrics
+  - Privacy Settings
+end note
+
+@enduml 

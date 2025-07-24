@@ -1,0 +1,83 @@
+import { Router, Request, Response } from 'express';
+import { WorkoutPlanService } from '../services/WorkoutPlanService';
+import { validateDto } from '../middleware/validation.middleware';
+import { CreateWorkoutPlanDto, UpdateWorkoutPlanDto } from '../dtos/workout.dto';
+
+export const workoutRoutes = Router();
+const workoutPlanService = new WorkoutPlanService();
+
+// Get all workout plans
+workoutRoutes.get('/', async (_: Request, res: Response): Promise<Response> => {
+    try {
+        const plans = await workoutPlanService.getAllWorkoutPlans();
+        return res.json(plans);
+    } catch (error) {
+        console.error('Error fetching workout plans:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get workout plan by ID
+workoutRoutes.get('/:id', async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const plan = await workoutPlanService.getWorkoutPlanById(parseInt(req.params.id));
+        if (!plan) {
+            return res.status(404).json({ error: 'Workout plan not found' });
+        }
+        return res.json(plan);
+    } catch (error) {
+        console.error('Error fetching workout plan:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create new workout plan
+workoutRoutes.post('/', 
+    validateDto(CreateWorkoutPlanDto),
+    async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const plan = await workoutPlanService.createWorkoutPlan(req.body);
+            return res.status(201).json(plan);
+        } catch (error) {
+            console.error('Error creating workout plan:', error);
+            if (error instanceof Error && error.message.includes('Exercise with ID')) {
+                return res.status(400).json({ error: error.message });
+            }
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+);
+
+// Update workout plan
+workoutRoutes.put('/:id',
+    validateDto(UpdateWorkoutPlanDto),
+    async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const plan = await workoutPlanService.updateWorkoutPlan(parseInt(req.params.id), req.body);
+            if (!plan) {
+                return res.status(404).json({ error: 'Workout plan not found' });
+            }
+            return res.json(plan);
+        } catch (error) {
+            console.error('Error updating workout plan:', error);
+            if (error instanceof Error && error.message.includes('Exercise with ID')) {
+                return res.status(400).json({ error: error.message });
+            }
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+);
+
+// Delete workout plan
+workoutRoutes.delete('/:id', async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const deleted = await workoutPlanService.deleteWorkoutPlan(parseInt(req.params.id));
+        if (!deleted) {
+            return res.status(404).json({ error: 'Workout plan not found' });
+        }
+        return res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting workout plan:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}); 

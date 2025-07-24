@@ -1,0 +1,155 @@
+@startuml Progress_Tracking_ERD
+
+' Page settings
+skinparam pageMargin 10
+skinparam pageExternalColor white
+skinparam pageBorderColor white
+skinparam page {
+    width 900
+    height 1400
+}
+
+' Styling
+hide methods
+hide stereotypes
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Core>> #B4D6FF
+    BackgroundColor<<Junction>> #B4FFB4
+    BackgroundColor<<Tracking>> #FFD6B4
+    BackgroundColor<<Analysis>> #FFE6CC
+    BorderColor #666666
+    ArrowColor #666666
+    FontSize 11
+    AttributeFontSize 10
+}
+
+' Core Entities
+package "Core Entities" {
+    class users << Core >> {
+        ○ PK id: int
+        --
+        email: varchar(255)
+        stats: jsonb
+        preferences: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class exercises << Core >> {
+        ○ PK id: uuid
+        --
+        name: varchar(100)
+        type: enum['strength','cardio','flexibility','balance']
+        metrics: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Progress Tracking
+package "Progress Records" {
+    class workout_sessions << Tracking >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        FK workout_plan_id: uuid
+        start_time: timestamp
+        end_time: timestamp
+        duration: interval
+        status: enum['planned','in_progress','completed','cancelled']
+        calories_burned: decimal
+        difficulty_rating: int
+        exerciseResults: jsonb
+        performance_metrics: jsonb
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class body_metrics << Tracking >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        weight: decimal
+        height: decimal
+        bmi: decimal
+        bodyFat: decimal
+        muscleMass: decimal
+        measurementDate: timestamp
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+
+    class fitness_goals << Tracking >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        goalType: varchar(50)
+        targetValue: decimal
+        startDate: timestamp
+        endDate: timestamp
+        status: varchar(20)
+        progress: decimal
+        createdAt: timestamp
+        updatedAt: timestamp
+    }
+}
+
+' Analysis Records
+package "Performance Analysis" {
+    class exercise_form_analysis << Analysis >> {
+        ○ PK id: uuid
+        --
+        FK session_id: uuid
+        FK exercise_id: uuid
+        form_score: decimal
+        joint_angles: jsonb
+        movement_path: jsonb
+        speed_metrics: jsonb
+        balance_metrics: jsonb
+        recommendations: text[]
+        createdAt: timestamp
+    }
+
+    class progress_metrics << Analysis >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        metric_type: varchar(50)
+        value: decimal
+        comparison_value: decimal
+        change_percentage: decimal
+        period: varchar(20)
+        analysis_date: timestamp
+        createdAt: timestamp
+    }
+
+    class achievement << Analysis >> {
+        ○ PK id: uuid
+        --
+        FK user_id: int
+        name: varchar(100)
+        description: text
+        criteria: jsonb
+        progress: decimal
+        achievedAt: timestamp
+        createdAt: timestamp
+    }
+}
+
+' Relationships with specific cardinality constraints
+users "1" *-- "1..*" workout_sessions : "tracks workouts" >
+users "1" *-- "1..*" body_metrics : "tracks measurements" >
+users "1" *-- "0..5" fitness_goals : "sets goals" >
+users "1" *-- "0..*" achievement : "earns" >
+users "1" *-- "0..*" progress_metrics : "analyzes" >
+
+workout_sessions "1" *-- "0..*" exercise_form_analysis : "analyzes form" >
+exercises "1" o-- "0..*" exercise_form_analysis : "evaluated in" >
+
+' Layout hints
+users -[hidden]d- workout_sessions
+workout_sessions -[hidden]d- exercise_form_analysis
+exercises -[hidden]d- exercise_form_analysis
+
+@enduml 

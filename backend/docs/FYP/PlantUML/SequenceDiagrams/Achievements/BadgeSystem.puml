@@ -1,0 +1,88 @@
+@startuml BadgeSystem
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Badge System Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Badge Overview ==
+
+User -> FE: Access Badges
+FE -> BE: Request Badge Status
+BE -> DB: Fetch Badges
+DB -> BE: Return Badge Data
+BE -> FE: Send Badge Collection
+FE -> User: Display Badges
+
+== Badge Earning ==
+
+BE -> BE: Monitor User Performance
+BE -> DB: Check Badge Criteria
+DB -> BE: Return Progress Data
+BE -> BE: Evaluate Performance
+alt Badge Earned
+    BE -> DB: Award Badge
+    DB -> BE: Update Badge Status
+    BE -> FE: Send Badge Notification
+    FE -> User: Display New Badge
+else Progress Updated
+    BE -> FE: Send Progress Update
+    FE -> User: Display Progress
+end
+
+== Badge Display ==
+
+User -> FE: View Badge Collection
+FE -> BE: Request Badge Details
+BE -> DB: Fetch Badge Info
+DB -> BE: Return Badge Data
+BE -> FE: Send Badge Information
+FE -> User: Display Badge Gallery
+
+== Badge Sharing ==
+
+User -> FE: Share Badge
+FE -> BE: Request Share Options
+BE -> FE: Send Share Methods
+FE -> User: Display Share Menu
+User -> FE: Select Share Method
+FE -> BE: Process Share Request
+BE -> FE: Generate Share Content
+FE -> User: Complete Share
+
+== Badge Categories ==
+
+User -> FE: Filter Badges
+FE -> BE: Request Categories
+BE -> DB: Fetch Categories
+DB -> BE: Return Categories
+BE -> FE: Send Category List
+FE -> User: Display Filtered Badges
+
+note right of User
+  Badge Features:
+  - Badge Earning
+  - Collection Display
+  - Sharing Options
+  - Category Filtering
+  - Progress Tracking
+end note
+
+@enduml 

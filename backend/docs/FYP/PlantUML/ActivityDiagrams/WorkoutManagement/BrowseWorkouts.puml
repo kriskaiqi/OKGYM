@@ -1,0 +1,87 @@
+@startuml BrowseWorkouts
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Browse Workouts Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Workouts Section;
+
+|System|
+:Retrieve Available Workout Plans;
+
+if (Workouts Available?) then (yes)
+  :Display Workout List;
+  
+  |User|
+  :Scroll Through Workouts;
+  
+  fork
+    |System|
+    :Load More Workouts on Scroll;
+    
+    if (More Workouts Available?) then (yes)
+      :Append to Displayed List;
+    else (no)
+      :Display "End of List" Message;
+    endif
+  fork again
+    |User|
+    :Hover Over Workout Items;
+    
+    |System|
+    :Display Video Preview;
+    
+    if (Preview Loaded?) then (yes)
+      :Play Preview;
+    else (no)
+      :Display Placeholder Image;
+      :Show Retry Option;
+    endif
+  end fork
+  
+  |User|
+  :Select Workout to View Details;
+  
+  |System|
+  :Display Workout Details;
+  
+  stop
+else (no)
+  :Display "No Workouts Available" Message;
+  :Suggest Creating Workout Plan;
+  
+  stop
+endif
+
+note right
+  Workout Information:
+  - Name and Description
+  - Difficulty Level
+  - Duration
+  - Target Muscle Groups
+  - Equipment Required
+  - Video Preview
+end note
+
+@enduml 

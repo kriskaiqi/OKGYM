@@ -1,0 +1,102 @@
+@startuml ViewEquipmentDetails
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title View Equipment Details Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Select Equipment Item;
+
+|System|
+:Retrieve Equipment Details;
+
+if (Equipment Details Available?) then (yes)
+  :Display Equipment Information:
+  - Name and Description
+  - Category and Type
+  - Usage Instructions
+  - Safety Guidelines
+  - Related Exercises;
+  
+  |User|
+  :Interact with Equipment Details;
+  
+  fork
+    |User|
+    :View Usage Instructions;
+    
+    |System|
+    :Display Step-by-Step Guide:
+    - Setup Instructions
+    - Proper Usage
+    - Common Mistakes
+    - Safety Tips;
+  fork again
+    |User|
+    :View Related Exercises;
+    
+    |System|
+    :Display Exercise List:
+    - Exercise Names
+    - Difficulty Levels
+    - Target Muscles
+    - Preview Images;
+    
+    |User|
+    :Select Exercise to View Details;
+    
+    |System|
+    :Navigate to Exercise Details;
+  fork again
+    |User|
+    :View Safety Guidelines;
+    
+    |System|
+    :Display Safety Information:
+    - Risk Factors
+    - Proper Form
+    - Warning Signs
+    - Emergency Procedures;
+  end fork
+  
+  |User|
+  :Return to Equipment List;
+  
+  stop
+else (no)
+  :Display "Equipment Details Unavailable" Message;
+  :Suggest Contacting Support;
+  
+  stop
+endif
+
+note right
+  Equipment Details Include:
+  - Basic Information
+  - Usage Instructions
+  - Safety Guidelines
+  - Related Exercises
+  - Visual Guides
+end note
+
+@enduml 

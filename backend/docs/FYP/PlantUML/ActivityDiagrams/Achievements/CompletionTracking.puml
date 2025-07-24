@@ -1,0 +1,57 @@
+@startuml CompletionTracking
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Achievement Completion Tracking Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|System|
+:Monitor User Activity;
+
+:Check Achievement Progress;
+
+if (Achievement Completed?) then (yes)
+  :Update Achievement Status;
+  :Calculate Completion Rate;
+  
+  :Display Achievement Unlocked;
+  
+  |User|
+  :View New Achievement;
+  
+  |System|
+  :Update Achievement Statistics;
+else (no)
+  :Continue Progress Tracking;
+endif
+
+stop
+
+note right
+  Tracking Features:
+  - Automatic Progress Monitoring
+  - Real-time Status Updates
+  - Completion Rate Calculation
+  - Achievement Statistics
+end note
+
+@enduml 

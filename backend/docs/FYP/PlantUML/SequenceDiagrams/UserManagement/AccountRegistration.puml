@@ -1,0 +1,60 @@
+@startuml AccountRegistration
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Account Registration Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+User -> FE: Navigate to Registration Page
+FE -> User: Display Registration Form
+
+User -> FE: Enter Registration Details
+FE -> BE: Submit Registration Data
+BE -> DB: Check Email Availability
+
+alt Email Available
+    DB -> BE: Email Available
+    BE -> BE: Validate Registration Data
+    
+    alt Data Valid
+        BE -> DB: Create New User Account
+        DB -> BE: Account Created
+        BE -> FE: Registration Success
+        FE -> User: Display Success Message
+        FE -> User: Redirect to Login
+    else Data Invalid
+        BE -> FE: Validation Error
+        FE -> User: Display Error Message
+    end
+else Email Not Available
+    DB -> BE: Email Exists
+    BE -> FE: Email Error
+    FE -> User: Display Email Error
+end
+
+note right of User
+  Registration Details:
+  - Email
+  - Password
+  - Name
+  - Other Profile Info
+end note
+
+@enduml 

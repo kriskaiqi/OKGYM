@@ -1,0 +1,140 @@
+@startgantt
+project starts 2025-01-06
+projectscale daily
+
+skinparam ganttDiagram {
+    GridColor #F0F0F0
+    LineColor #EEEEEE
+    FontSize 13
+    BarHeight 35
+    BarRadius 0
+    HeaderFontSize 14
+    ArrowColor #999999
+    CompleteColor #00FF00
+    FooterFontSize 13
+    BarFontSize 13
+    MinimumWidth 250
+}
+
+-- Project Phases --
+[Phase 0:\nModel Training and\nData Collection] as [P0] lasts 28 days
+[Phase 1:\nProject Setup and\nCore Infrastructure] as [P1] lasts 14 days
+[Phase 2:\nUser Management and\nAuthentication] as [P2] lasts 14 days
+[Phase 3:\nWorkout and Exercise\nManagement] as [P3] lasts 21 days
+[Phase 4:\nAI/ML Integration] as [P4] lasts 21 days
+[Phase 5:\nProgress Tracking and\nAchievements] as [P5] lasts 14 days
+[Phase 6:\nTesting and\nOptimization] as [P6] lasts 7 days
+[Phase 7:\nDocumentation and\nDeployment] as [P7] lasts 14 days
+
+-- Phase 0 Tasks --
+[P0] starts 2025-01-06
+[Data Collection and\nPreparation] as [T0.1] lasts 14 days
+[Model Architecture\nDesign] as [T0.2] lasts 7 days
+[Model Training and\nValidation] as [T0.3] lasts 14 days
+[Model Performance\nTuning] as [T0.4] lasts 7 days
+[T0.1] starts at [P0]'s start
+[T0.2] starts at [T0.1]'s start
+[T0.3] starts at [T0.1]'s end
+[T0.4] starts at [T0.3]'s end
+
+-- Phase 1 Tasks --
+[P1] starts at [P0]'s end
+[Project\nSetup] as [T1.1] lasts 7 days
+[Database\nSetup] as [T1.2] lasts 7 days
+[Core\nInfrastructure] as [T1.3] lasts 7 days
+[T1.1] starts at [P1]'s start
+[T1.2] starts at [T1.1]'s end
+[T1.3] starts at [T1.1]'s start
+
+-- Phase 2 Tasks --
+[P2] starts at [P1]'s end
+[User Model\nImplementation] as [T2.1] lasts 7 days
+[Authentication\nSystem] as [T2.2] lasts 7 days
+[Profile\nManagement] as [T2.3] lasts 7 days
+[T2.1] starts at [P2]'s start
+[T2.2] starts at [T2.1]'s end
+[T2.3] starts at [T2.1]'s start
+
+-- Phase 3 Tasks --
+[P3] starts at [P2]'s end
+[Exercise\nManagement] as [T3.1] lasts 14 days
+[Workout\nManagement] as [T3.2] lasts 14 days
+[Equipment\nManagement] as [T3.3] lasts 7 days
+[T3.1] starts at [P3]'s start
+[T3.2] starts at [P3]'s start
+[T3.3] starts at [T3.1]'s end
+
+-- Phase 4 Tasks --
+[P4] starts at [P3]'s end
+[AI/ML\nInfrastructure] as [T4.1] lasts 7 days
+[Pose Detection\nIntegration] as [T4.2] lasts 14 days
+[Exercise Analysis\nModels] as [T4.3] lasts 14 days
+[Real-time\nFeedback System] as [T4.4] lasts 14 days
+[T4.1] starts at [P4]'s start
+[T4.2] starts at [T4.1]'s end
+[T4.3] starts at [T4.1]'s start
+[T4.4] starts at [T4.2]'s end
+
+-- Phase 5 Tasks --
+[P5] starts at [P4]'s end
+[Progress\nTracking] as [T5.1] lasts 7 days
+[Achievements\nSystem] as [T5.2] lasts 7 days
+[Reports and\nAnalytics] as [T5.3] lasts 7 days
+[T5.1] starts at [P5]'s start
+[T5.2] starts at [T5.1]'s end
+[T5.3] starts at [T5.1]'s start
+
+-- Phase 6 Tasks --
+[P6] starts at [P5]'s end
+[System\nTest] as [T6.1] lasts 4 days
+[Perf.\nOpt.] as [T6.2] lasts 3 days
+[T6.1] starts at [P6]'s start
+[T6.2] starts at [T6.1]'s end
+
+-- Phase 7 Tasks --
+[P7] starts at [P6]'s end
+[Tech\nDocs] as [T7.1] lasts 7 days
+[User\nGuides] as [T7.2] lasts 7 days
+[Deploy] as [T7.3] lasts 4 days
+[T7.1] starts at [P7]'s start
+[T7.2] starts at [P7]'s start
+[T7.3] starts at [T7.1]'s end
+
+-- Dependencies --
+[T0.1] -> [T0.3]
+[T0.3] -> [T0.4]
+[T1.1] -> [T1.2]
+[T1.1] -> [T1.3]
+[T2.1] -> [T2.2]
+[T2.1] -> [T2.3]
+[T3.1] -> [T3.3]
+[T4.1] -> [T4.2]
+[T4.2] -> [T4.4]
+[T4.3] -> [T4.4]
+[T5.1] -> [T5.2]
+[T5.1] -> [T5.3]
+[T6.1] -> [T6.2]
+[T7.1] -> [T7.3]
+
+-- Milestones --
+[Project Kickoff] happens 2025-01-06
+[Model Training\nComplete] happens at [P0]'s end
+[Core Infrastructure\nComplete] happens at [P1]'s end
+[User System\nComplete] happens at [P2]'s end
+[Workout System\nComplete] happens at [P3]'s end
+[AI Integration\nComplete] happens at [P4]'s end
+[Progress System\nComplete] happens at [P5]'s end
+[Testing Complete] happens at [P6]'s end
+[Project End] happens 2025-04-30
+
+-- Colors --
+[P0] is colored in LightPurple
+[P1] is colored in LightBlue
+[P2] is colored in LightGreen
+[P3] is colored in LightYellow
+[P4] is colored in LightPink
+[P5] is colored in LightCyan
+[P6] is colored in LightGray
+[P7] is colored in LightSalmon
+
+@endgantt 

@@ -1,0 +1,125 @@
+@startuml GoalManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Goal Management Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Goals Section;
+
+|System|
+:Display Current Goals;
+
+fork
+  |User|
+  :Add New Goal;
+  
+  |System|
+  :Display Goal Types:
+  - Strength Goals
+  - Endurance Goals
+  - Form Improvement
+  - Consistency Goals
+  - Weight Goals;
+  
+  |User|
+  :Select Goal Type;
+  
+  |System|
+  :Display Goal Parameters;
+  
+  |User|
+  :Set Goal Details:
+  - Target Value
+  - Deadline
+  - Milestones
+  - Priority Level;
+  
+  |System|
+  :Validate Goal Parameters;
+  
+  if (Goal Realistic?) then (yes)
+    :Save New Goal;
+    :Add to Dashboard;
+  else (no)
+    :Suggest Adjusted Parameters;
+    :Display Historical Data;
+    
+    |User|
+    :Modify Goal Parameters;
+    
+    |System|
+    :Revalidate Goal;
+  endif
+fork again
+  |User|
+  :Edit Existing Goal;
+  
+  |System|
+  :Display Current Goal Details;
+  
+  |User|
+  :Modify Goal Parameters;
+  
+  |System|
+  :Update Goal Progress;
+  :Recalculate Projections;
+fork again
+  |User|
+  :View Goal Progress;
+  
+  |System|
+  :Display Progress Metrics:
+  - Current Status
+  - Time Remaining
+  - Milestone Progress
+  - Projected Completion;
+  
+  :Show Progress Visualization:
+  - Progress Bars
+  - Trend Charts
+  - Milestone Indicators
+  - Achievement Predictions;
+end fork
+
+|System|
+:Update Dashboard Display;
+
+if (Goal Achieved?) then (yes)
+  :Mark Goal as Complete;
+  :Generate Achievement;
+  :Suggest New Goals;
+else (no)
+  :Continue Progress Tracking;
+endif
+
+note right
+  Goal Features:
+  - Multiple Goal Types
+  - Progress Tracking
+  - Milestone Setting
+  - Achievement Recognition
+  - Goal Recommendations
+end note
+
+@enduml 

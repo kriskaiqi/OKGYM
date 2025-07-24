@@ -1,0 +1,122 @@
+@startuml MetricsDisplay
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Metrics Display Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|System|
+:Initialize Metrics Display;
+
+:Configure Display Layout:
+- Landscape Mode
+- Vertical Mode
+- Custom Arrangement;
+
+|User|
+:Select Preferred Layout;
+
+|System|
+:Apply Selected Layout;
+
+fork
+  :Display Real-time Metrics:
+  - Form Score (0-100)
+  - Repetition Count
+  - Current Stage
+  - Joint Angles
+  - Form Check Indicators;
+  
+  :Update Metrics Continuously;
+fork again
+  :Display Exercise Information:
+  - Exercise Name
+  - Target Muscles
+  - Proper Form Guide
+  - Common Mistakes;
+end fork
+
+|User|
+:Monitor Exercise Metrics;
+
+fork
+  |User|
+  :View Specific Metric;
+  
+  |System|
+  :Highlight Selected Metric;
+  :Display Detailed Breakdown;
+fork again
+  |User|
+  :Change Layout;
+  
+  |System|
+  :Reorganize Display;
+  :Maintain Real-time Updates;
+fork again
+  |User|
+  :Toggle Metric Visibility;
+  
+  |System|
+  :Show/Hide Selected Metrics;
+  :Adjust Layout Accordingly;
+end fork
+
+|System|
+:Save Layout Preferences;
+
+if (Exercise Complete?) then (yes)
+  :Generate Final Metrics Summary:
+  - Overall Form Score
+  - Total Repetitions
+  - Form Improvement
+  - Performance Trends;
+  
+  :Display Summary Screen;
+  
+  |User|
+  :Review Final Metrics;
+  
+  |System|
+  :Save Metrics to History;
+  stop
+else (no)
+  :Continue Real-time Updates;
+  repeat
+    |User|
+    :Monitor Exercise;
+    
+    |System|
+    :Update Metrics Display;
+  repeat while (Exercise Complete?) is (no)
+endif
+
+note right
+  Display Features:
+  - Real-time Updates
+  - Multiple Layouts
+  - Metric Customization
+  - Detailed Breakdowns
+  - Performance Summary
+end note
+
+@enduml 

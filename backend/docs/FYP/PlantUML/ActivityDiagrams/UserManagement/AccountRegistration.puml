@@ -1,0 +1,83 @@
+@startuml AccountRegistration
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Account Registration Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Registration Page;
+
+|System|
+:Display Registration Form;
+
+|User|
+:Enter Registration Details:
+- Name
+- Email
+- Password
+- Other Required Information;
+
+|System|
+:Validate Input Data;
+
+if (Data Valid?) then (yes)
+  :Check Email Availability;
+  
+  if (Email Available?) then (yes)
+    :Create User Account;
+    :Send Verification Email;
+    :Display Success Message;
+    
+    |User|
+    :Verify Email Address;
+    
+    |System|
+    :Confirm Email Verification;
+    :Activate Account;
+    :Redirect to Login Page;
+    
+    stop
+  else (no)
+    :Display "Email Already Registered" Error;
+    :Return to Registration Form;
+  endif
+else (no)
+  :Display Validation Errors:
+  - Required Fields Missing
+  - Invalid Email Format
+  - Password Requirements Not Met;
+  :Return to Registration Form;
+endif
+
+|User|
+:Correct Errors and Resubmit;
+
+note right
+  Password Requirements:
+  - Minimum 8 characters
+  - At least 1 uppercase
+  - At least 1 number
+  - At least 1 special character
+end note
+
+@enduml 

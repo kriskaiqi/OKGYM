@@ -1,0 +1,96 @@
+@startuml FilterExercises
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Filter Exercises Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Select Filter Options;
+
+|System|
+:Display Filter Criteria:
+- Exercise Type
+- Target Muscle Groups
+- Difficulty Level
+- Equipment Required
+- Duration;
+
+|User|
+:Select Filter Criteria;
+
+|System|
+:Apply Selected Filters;
+
+if (Matching Exercises Found?) then (yes)
+  :Display Filtered Exercise List;
+  
+  |User|
+  :Review Filtered Results;
+  
+  fork
+    |User|
+    :Adjust Filter Criteria;
+    
+    |System|
+    :Update Filtered Results;
+  fork again
+    |User|
+    :Clear All Filters;
+    
+    |System|
+    :Reset to Full Exercise List;
+  end fork
+  
+  stop
+else (no)
+  :Display "No Matching Exercises" Message;
+  :Suggest Adjusting Criteria;
+  
+  |User|
+  :Modify Filter Criteria;
+  
+  repeat
+    |System|
+    :Reapply Filters;
+    
+    if (Matching Exercises Found?) then (yes)
+      :Display Filtered Exercise List;
+      break
+    else (no)
+      :Display "No Matching Exercises" Message;
+    endif
+  repeat while (No Results?) is (yes)
+  
+  stop
+endif
+
+note right
+  Filter Criteria:
+  - Exercise Type (strength, cardio, flexibility)
+  - Target Muscle Groups
+  - Difficulty Level (beginner to advanced)
+  - Equipment Required
+  - Duration Range
+end note
+
+@enduml 

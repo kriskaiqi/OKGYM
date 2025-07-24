@@ -1,0 +1,61 @@
+@startuml AchievementFiltering
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Achievement Filtering Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Access Achievement Filters;
+
+|System|
+:Display Filter Options:
+- Status (Completed/In Progress/Locked)
+- Category (Exercise/Consistency/Goals)
+- Difficulty (Easy/Medium/Hard)
+- Time Period;
+
+|User|
+:Select Filter Criteria;
+
+|System|
+:Apply Selected Filters;
+
+:Display Filtered Achievements;
+
+|User|
+:View Filtered Results;
+
+|System|
+:Update Achievement Display;
+
+stop
+
+note right
+  Filtering Features:
+  - Multiple Filter Categories
+  - Status-based Filtering
+  - Category Selection
+  - Time-based Filtering
+end note
+
+@enduml 

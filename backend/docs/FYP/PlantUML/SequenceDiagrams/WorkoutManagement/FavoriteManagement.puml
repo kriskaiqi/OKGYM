@@ -1,0 +1,70 @@
+@startuml FavoriteManagement
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Favorite Management Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Save Favorite ==
+
+User -> FE: Click Favorite Button
+FE -> BE: Request Save Favorite
+BE -> DB: Check Existing Favorite
+DB -> BE: Return Check Result
+
+alt Not Favorited
+    BE -> DB: Save Favorite
+    DB -> BE: Favorite Saved
+    BE -> FE: Save Success
+    FE -> User: Update Favorite Status
+else Already Favorited
+    BE -> DB: Remove Favorite
+    DB -> BE: Favorite Removed
+    BE -> FE: Remove Success
+    FE -> User: Update Favorite Status
+end
+
+== View Favorites ==
+
+User -> FE: Access Favorites
+FE -> BE: Request Favorite List
+BE -> DB: Fetch Favorites
+DB -> BE: Return Favorite Data
+BE -> FE: Send Favorite List
+FE -> User: Display Favorites
+
+== Quick Access ==
+
+User -> FE: Select Favorite
+FE -> BE: Request Favorite Details
+BE -> DB: Fetch Favorite Workout
+DB -> BE: Return Workout Data
+BE -> FE: Send Workout Info
+FE -> User: Display Workout
+
+note right of User
+  Favorite Features:
+  - Save/Remove Favorites
+  - Favorite List View
+  - Quick Access
+  - Status Updates
+end note
+
+@enduml 

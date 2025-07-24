@@ -1,0 +1,111 @@
+@startuml VideoProcessing
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Video Processing Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|System|
+:Receive Uploaded Video;
+
+:Validate Video Properties:
+- Format
+- Duration
+- Resolution
+- Size;
+
+if (Video Valid?) then (yes)
+  :Display Processing Status;
+  :Begin Video Analysis;
+  
+  fork
+    :Extract Frames;
+    :Detect Skeletal Points;
+    :Track Movement Patterns;
+  fork again
+    :Analyze Exercise Form;
+    :Calculate Metrics;
+    :Generate Feedback;
+  end fork
+  
+  :Combine Analysis Results;
+  
+  |User|
+  :View Processing Progress;
+  
+  |System|
+  if (Analysis Complete?) then (yes)
+    :Generate Analysis Report:
+    - Form Score
+    - Repetition Count
+    - Stage Analysis
+    - Angle Metrics
+    - Form Checks;
+    
+    :Display Analysis Results;
+    
+    |User|
+    :Review Analysis;
+    
+    fork
+      |User|
+      :View Detailed Metrics;
+      
+      |System|
+      :Display Metric Breakdown;
+    fork again
+      |User|
+      :View Form Feedback;
+      
+      |System|
+      :Display Correction Points;
+    fork again
+      |User|
+      :Save Analysis Results;
+      
+      |System|
+      :Store in Workout History;
+    end fork
+    
+    stop
+  else (no)
+    :Display Processing Error;
+    :Suggest Retry or Contact Support;
+    stop
+  endif
+else (no)
+  :Display Validation Error;
+  :Suggest Correct Format;
+  stop
+endif
+
+note right
+  Processing Steps:
+  - Video Validation
+  - Frame Extraction
+  - Skeletal Detection
+  - Movement Analysis
+  - Form Evaluation
+  - Metric Calculation
+end note
+
+@enduml 

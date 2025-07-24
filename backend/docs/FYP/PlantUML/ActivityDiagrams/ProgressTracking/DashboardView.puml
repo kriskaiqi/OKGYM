@@ -1,0 +1,115 @@
+@startuml DashboardView
+
+' Styling
+skinparam backgroundColor white
+skinparam activity {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    FontColor Black
+}
+skinparam arrow {
+    Color DarkBlue
+    FontColor Black
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Progress Dashboard View Process
+
+|#LightGreen|User|
+|#LightBlue|System|
+
+start
+
+|User|
+:Navigate to Progress Dashboard;
+
+|System|
+:Retrieve User Progress Data;
+
+if (Progress Data Available?) then (yes)
+  :Display Dashboard Overview;
+  
+  fork
+    :Show Progress Summary:
+    - Workout Frequency
+    - Exercise Performance
+    - Form Improvement
+    - Goal Progress;
+  fork again
+    :Display Statistics:
+    - Weekly/Monthly Trends
+    - Achievement Rate
+    - Consistency Score
+    - Improvement Metrics;
+  end fork
+  
+  |User|
+  :Interact with Dashboard;
+  
+  fork
+    |User|
+    :Select Time Period;
+    
+    |System|
+    :Update Data Range;
+    :Refresh Statistics;
+  fork again
+    |User|
+    :View Specific Metric;
+    
+    |System|
+    :Display Detailed View:
+    - Historical Data
+    - Trend Analysis
+    - Comparison Charts
+    - Projections;
+  fork again
+    |User|
+    :Compare Periods;
+    
+    |System|
+    :Show Comparative Analysis:
+    - Period-over-Period
+    - Year-over-Year
+    - Custom Range;
+  end fork
+  
+  |System|
+  :Save View Preferences;
+  
+  stop
+else (no)
+  :Display "No Progress Data" Message;
+  :Suggest Starting Workouts;
+  
+  fork
+    |User|
+    :View Sample Data;
+    
+    |System|
+    :Display Example Dashboard;
+  fork again
+    |User|
+    :Start First Workout;
+    
+    |System|
+    :Navigate to Workout Selection;
+  end fork
+  
+  stop
+endif
+
+note right
+  Dashboard Features:
+  - Progress Overview
+  - Statistical Analysis
+  - Time-based Filtering
+  - Comparative Views
+  - Customizable Display
+end note
+
+@enduml 

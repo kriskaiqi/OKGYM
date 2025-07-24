@@ -1,0 +1,69 @@
+@startuml WorkoutBrowsing
+
+' Styling
+skinparam backgroundColor white
+skinparam sequence {
+    ArrowColor DarkBlue
+    ActorBorderColor DarkBlue
+    LifeLineBorderColor DarkBlue
+    ParticipantBorderColor DarkBlue
+    ParticipantBackgroundColor LightBlue
+}
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor DarkYellow
+    FontColor Black
+}
+
+title Workout Browsing Sequence
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+== Initial Load ==
+
+User -> FE: Navigate to Workouts
+FE -> BE: Request Workout List
+BE -> DB: Fetch Workouts
+DB -> BE: Return Workout Data
+BE -> FE: Send Workout List
+FE -> User: Display Workouts
+
+== Filtering Process ==
+
+User -> FE: Apply Filters
+FE -> BE: Submit Filter Criteria
+BE -> DB: Query Filtered Workouts
+DB -> BE: Return Filtered Results
+BE -> FE: Send Filtered List
+FE -> User: Update Display
+
+== Pagination ==
+
+User -> FE: Navigate Page
+FE -> BE: Request Page Data
+BE -> DB: Fetch Page Results
+DB -> BE: Return Page Data
+BE -> FE: Send Page Results
+FE -> User: Update Display
+
+== Search ==
+
+User -> FE: Enter Search Query
+FE -> BE: Submit Search Request
+BE -> DB: Search Workouts
+DB -> BE: Return Search Results
+BE -> FE: Send Search Results
+FE -> User: Update Display
+
+note right of User
+  Browsing Features:
+  - Workout List Display
+  - Filtering Options
+  - Pagination
+  - Search Functionality
+end note
+
+@enduml 
