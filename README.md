@@ -43,7 +43,6 @@ The OKGYM project aims to simplify fitness tracking and motivate users towards t
 
 ## Demo Video
 [![Watch the demo video](https://img.youtube.com/vi/UqYxnq5Bpk0/0.jpg)](https://www.youtube.com/watch?v=UqYxnq5Bpk0)
-[Watch the full demo on YouTube!](https://www.youtube.com/watch?v=UqYxnq5Bpk0)
 
 ## Getting Started
 
